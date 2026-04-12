@@ -35,8 +35,7 @@ from pyui import (
 class StorybookPage(Page):
     title = "PyUI Storybook - Component Gallery"
     route = "/"
-
-    def compose(self):
+    def compose(self) -> None:
         with Flex(direction="col", gap=10).padding(10):
             Heading("PyUI Storybook", subtitle="Component Gallery & UI Kit").style("gradient")
 
@@ -131,7 +130,7 @@ class StorybookPage(Page):
                         ],
                     )
 
-    def _section(self, title: str):
+    def _section(self, title: str) -> None:
         with Stack(spacing=2).className("mt-8 mb-4"):
             Heading(title, level=2)
             Divider()
@@ -142,7 +141,7 @@ class StorybookApp(App):
     index = StorybookPage()
 
 
-def run_storybook(port: int = 8000, open_browser: bool = True):
+def run_storybook(port: int = 8000, open_browser: bool = True) -> None:
     from pyui.server.dev_server import run_dev_server
 
     run_dev_server(StorybookApp, port=port, open_browser=open_browser)

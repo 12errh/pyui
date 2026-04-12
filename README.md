@@ -55,6 +55,19 @@ class StoryApp(App):
     index = HomePage()
 ```
 
+## CLI Reference
+
+PyUI comes with a powerful command-line interface to manage your projects:
+
+- `pyui new <name>`: Scaffold a new project (options: `--template` blank, dashboard, etc.).
+- `pyui run [app_file]`: Start the development server with hot-reload (default: `app.py`).
+- `pyui storybook`: Explore your component gallery locally (`--port 9005`).
+- `pyui build [app_file]`: Compile your app to a static production bundle.
+- `pyui publish`: Publish your custom components to the PyUI marketplace.
+- `pyui doctor`: Check environment health and dependencies.
+- `pyui lint [app_file]`: Lint your component definitions and architecture.
+- `pyui info`: Display PyUI version and framework tracking details.
+
 ## Status
 
 ✅ **Phase 0 & 1** (Foundations & Layout) - Complete  

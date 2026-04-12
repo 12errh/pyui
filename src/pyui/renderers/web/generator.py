@@ -683,7 +683,7 @@ def _render_alert(node: IRNode) -> str:
             "danger": "alert-circle",
             "warning": "alert-triangle",
             "info": "info",
-        }.get(node.style_variant, "info")
+        }.get(node.style_variant or "info", "info")
         icon_html = f'<div class="flex-shrink-0 mr-3"><i data-lucide="{icon_name}" class="h-5 w-5"></i></div>'
 
     desc_html = f'<div class="mt-1 text-sm opacity-90">{description}</div>' if description else ""

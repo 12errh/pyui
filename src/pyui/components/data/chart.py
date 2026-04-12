@@ -1,3 +1,5 @@
+from typing import Any
+
 from pyui.components.base import BaseComponent
 
 
@@ -12,7 +14,7 @@ class Chart(BaseComponent):
         self,
         type: str = "line",
         labels: list[str] | None = None,
-        datasets: list[dict] | None = None,
+        datasets: list[dict[str, Any]] | None = None,
     ) -> None:
         super().__init__()
         self.props.update(

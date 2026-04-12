@@ -12,6 +12,6 @@ class Spacer(BaseComponent):
         super().__init__()
         self.props["size"] = size
 
-    def size(self, value: int) -> "Spacer":
+    def size(self, value: int) -> "Spacer":  # type: ignore[override]
         self.props["size"] = value
         return self

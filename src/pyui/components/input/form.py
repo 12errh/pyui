@@ -1,3 +1,6 @@
+from collections.abc import Callable
+from typing import Any
+
 from pyui.components.base import BaseComponent
 
 
@@ -12,6 +15,6 @@ class Form(BaseComponent):
         super().__init__()
         self.props["title"] = title
 
-    def onSubmit(self, handler: callable) -> "Form":  # noqa: N802
+    def onSubmit(self, handler: Callable[..., Any]) -> "Form":  # noqa: N802
         self._on_change = handler  # We'll use _on_change internally or a dedicated handler
         return self

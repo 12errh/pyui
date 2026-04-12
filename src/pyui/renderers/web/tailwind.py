@@ -297,7 +297,7 @@ _IMAGE_FITS = {
 
 
 def image_classes(fit: str | None) -> str:
-    fit_cls = _IMAGE_FITS.get(fit, "object-cover")
+    fit_cls = _IMAGE_FITS.get(fit or "cover", "object-cover")
     return f"rounded-lg {fit_cls} w-full h-full"
 
 
