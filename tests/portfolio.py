@@ -22,25 +22,29 @@ class PortfolioPage(Page):
         with Flex(direction="col").className("min-h-screen w-full bg-[#f8fafc] font-sans text-slate-900 overflow-x-hidden pt-4 lg:pt-8 !max-w-[100vw] selection:bg-orange-500 selection:text-white"):
             
             # --- Navigation ---
-            with Container(size="6xl").className("pt-6 pb-4 relative z-50"):
-                with Flex(justify="between", align="center").className("backdrop-blur-md bg-white/70 px-8 py-4 rounded-full border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"):
-                    # Links (Left)
-                    with Flex(gap=10).className("hidden md:flex text-sm font-bold text-slate-600 uppercase tracking-widest"):
-                        Text("About Me").className("hover:text-orange-500 transition-colors cursor-pointer relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-0 after:h-0.5 after:bg-orange-500 after:transition-all hover:after:w-full")
-                        Text("Portfolio").className("text-orange-500 cursor-pointer relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-orange-500")
-                        Text("Testimonial").className("hover:text-orange-500 transition-colors cursor-pointer relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-0 after:h-0.5 after:bg-orange-500 after:transition-all hover:after:w-full")
-                    
-                    # Mobile Menu Icon
-                    Icon("menu").className("md:hidden text-slate-900 cursor-pointer hover:text-orange-500 transition-colors")
-                    
-                    # Center Logo (The "J" Icon)
-                    with Flex(justify="center", align="center").className("absolute left-1/2 -translate-x-1/2 cursor-pointer hover:scale-110 transition-transform duration-500"):
-                        with Flex(justify="center", align="center").className("w-14 h-14 bg-gradient-to-tr from-slate-900 to-slate-800 text-white rounded-full font-black text-2xl shadow-xl shadow-slate-900/20"):
-                            Text("J")
-                            
-                    # Contact Button
-                    with Flex().className("hidden md:block"):
-                        Button("Contact Me").className("!rounded-full !border-2 !border-slate-200 !bg-transparent !text-slate-900 shadow-sm hover:!border-slate-900 hover:!bg-slate-900 hover:!text-white !px-8 !py-2.5 !text-sm !font-bold uppercase tracking-widest transition-all duration-300")
+            with (
+                Container(size="6xl").className("pt-6 pb-4 relative z-50"),
+                Flex(justify="between", align="center").className("backdrop-blur-md bg-white/70 px-8 py-4 rounded-full border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"),
+            ):
+                # Links (Left)
+                with Flex(gap=10).className("hidden md:flex text-sm font-bold text-slate-600 uppercase tracking-widest"):
+                    Text("About Me").className("hover:text-orange-500 transition-colors cursor-pointer relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-0 after:h-0.5 after:bg-orange-500 after:transition-all hover:after:w-full")
+                    Text("Portfolio").className("text-orange-500 cursor-pointer relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-orange-500")
+                    Text("Testimonial").className("hover:text-orange-500 transition-colors cursor-pointer relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-0 after:h-0.5 after:bg-orange-500 after:transition-all hover:after:w-full")
+
+                # Mobile Menu Icon
+                Icon("menu").className("md:hidden text-slate-900 cursor-pointer hover:text-orange-500 transition-colors")
+
+                # Center Logo (The "J" Icon)
+                with (
+                    Flex(justify="center", align="center").className("absolute left-1/2 -translate-x-1/2 cursor-pointer hover:scale-110 transition-transform duration-500"),
+                    Flex(justify="center", align="center").className("w-14 h-14 bg-gradient-to-tr from-slate-900 to-slate-800 text-white rounded-full font-black text-2xl shadow-xl shadow-slate-900/20"),
+                ):
+                    Text("J")
+
+                # Contact Button
+                with Flex().className("hidden md:block"):
+                    Button("Contact Me").className("!rounded-full !border-2 !border-slate-200 !bg-transparent !text-slate-900 shadow-sm hover:!border-slate-900 hover:!bg-slate-900 hover:!text-white !px-8 !py-2.5 !text-sm !font-bold uppercase tracking-widest transition-all duration-300")
 
             # --- Hero Section ---
             with Container(size="6xl").className("relative pt-8 md:pt-12 pb-20"):
@@ -51,12 +55,14 @@ class PortfolioPage(Page):
                 with Grid(cols=1).className("md:grid-cols-12 gap-12 items-center"):
                     
                     # Hero Typography
-                    with Flex(direction="col").className("md:col-span-6 z-10 space-y-8"):
-                        with Stack(spacing=5):
-                            # Small introductory badge
-                            with Flex(align="center", gap=2).className("bg-orange-100/50 border border-orange-200 text-orange-600 px-4 py-1.5 rounded-full w-max backdrop-blur-sm"):
-                                Icon("sparkles", size=16)
-                                Text("Available for freelance work").className("text-sm font-bold tracking-wide")
+                    with (
+                        Flex(direction="col").className("md:col-span-6 z-10 space-y-8"),
+                        Stack(spacing=5),
+                    ):
+                        # Small introductory badge
+                        with Flex(align="center", gap=2).className("bg-orange-100/50 border border-orange-200 text-orange-600 px-4 py-1.5 rounded-full w-max backdrop-blur-sm"):
+                            Icon("sparkles", size=16)
+                            Text("Available for freelance work").className("text-sm font-bold tracking-wide")
 
                             Heading("My name\nis Jacob", level=1).className("text-[5rem] lg:text-[8rem] font-black tracking-tighter whitespace-pre-line leading-[0.9] text-transparent bg-clip-text bg-gradient-to-br from-slate-900 to-slate-700")
                             Text(
@@ -106,12 +112,14 @@ class PortfolioPage(Page):
                 # Decorative background text
                 Text("SERVICES").className("absolute top-20 left-0 text-[12rem] font-black text-slate-100 -z-10 leading-none select-none tracking-tighter")
 
-                with Flex(justify="between", align="end").className("mb-20"):
-                    with Stack(spacing=4):
-                        with Flex(align="center", gap=3):
-                            Flex().className("w-8 h-1 bg-orange-500 rounded-full")
-                            Text("What I Do").className("text-orange-500 font-black tracking-widest uppercase text-sm")
-                        Heading("Expertise Area", level=2).className("text-5xl lg:text-7xl font-black tracking-tighter text-slate-900")
+                with (
+                    Flex(justify="between", align="end").className("mb-20"),
+                    Stack(spacing=4),
+                    Flex(align="center", gap=3),
+                ):
+                    Flex().className("w-8 h-1 bg-orange-500 rounded-full")
+                    Text("What I Do").className("text-orange-500 font-black tracking-widest uppercase text-sm")
+                    Heading("Expertise Area", level=2).className("text-5xl lg:text-7xl font-black tracking-tighter text-slate-900")
                         
                 with Grid(cols=1).className("md:grid-cols-3 gap-8"):
                     # Service 1
@@ -230,19 +238,21 @@ class PortfolioPage(Page):
                 Text("LET'S TALK").className("absolute -top-12 -right-20 text-[25rem] font-black text-white opacity-5 tracking-tighter leading-none select-none blur-sm")
                 
                 with Container(size="6xl").className("relative z-10"):
-                    with Grid(cols=1).className("md:grid-cols-2 gap-20 items-center"):
-                        with Stack(spacing=10):
-                            Heading("Have an idea?\nLet's build it.", level=2).className("text-6xl lg:text-[5.5rem] font-black tracking-tighter leading-[1.05] !text-white whitespace-pre-line drop-shadow-lg")
-                            Text("I'm currently available for freelance projects. Let's create something extraordinary together.").className("text-orange-100 text-xl lg:text-2xl max-w-lg font-medium")
-                            
-                            with Flex(align="center", gap=6).className("mt-4"):
-                                Button("Start a Project").className("!bg-slate-900 hover:!bg-white hover:!text-slate-900 !text-white !rounded-full !px-12 !py-5 w-max font-black uppercase tracking-widest shadow-2xl transition-all hover:-translate-y-1 hover:shadow-white/20")
-                                with Flex(justify="center", align="center", gap=3).className("group cursor-pointer"):
-                                    with Flex(justify="center", align="center").className("w-14 h-14 rounded-full border-2 border-white/30 group-hover:border-white group-hover:bg-white group-hover:text-orange-500 transition-all"):
-                                        Icon("play", size=20)
-                                    Text("Watch Showreel").className("font-bold tracking-widest uppercase text-sm group-hover:translate-x-1 transition-transform")
+                    with (
+                        Grid(cols=1).className("md:grid-cols-2 gap-20 items-center"),
+                        Stack(spacing=10),
+                    ):
+                        Heading("Have an idea?\nLet's build it.", level=2).className("text-6xl lg:text-[5.5rem] font-black tracking-tighter leading-[1.05] !text-white whitespace-pre-line drop-shadow-lg")
+                        Text("I'm currently available for freelance projects. Let's create something extraordinary together.").className("text-orange-100 text-xl lg:text-2xl max-w-lg font-medium")
+                        
+                        with Flex(align="center", gap=6).className("mt-4"):
+                            Button("Start a Project").className("!bg-slate-900 hover:!bg-white hover:!text-slate-900 !text-white !rounded-full !px-12 !py-5 w-max font-black uppercase tracking-widest shadow-2xl transition-all hover:-translate-y-1 hover:shadow-white/20")
+                            with Flex(justify="center", align="center", gap=3).className("group cursor-pointer"):
+                                with Flex(justify="center", align="center").className("w-14 h-14 rounded-full border-2 border-white/30 group-hover:border-white group-hover:bg-white group-hover:text-orange-500 transition-all"):
+                                    Icon("play", size=20)
+                                Text("Watch Showreel").className("font-bold tracking-widest uppercase text-sm group-hover:translate-x-1 transition-transform")
 
-                        with Flex(direction="col", gap=14, align="end").className("md:text-right relative z-10 w-full"):
+                    with Flex(direction="col", gap=14, align="end").className("md:text-right relative z-10 w-full"):
                             with Flex(direction="col", gap=3, align="end").className("group cursor-pointer"):
                                 Text("Drop a line").className("text-orange-200 text-sm uppercase tracking-widest font-black !block")
                                 Text("hello@jacob.dev").className("text-3xl lg:text-4xl font-black group-hover:text-slate-900 transition-colors duration-300 !block underline decoration-white/30 decoration-2 underline-offset-8 group-hover:decoration-slate-900")

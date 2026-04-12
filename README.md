@@ -82,7 +82,8 @@ PyUI comes with a powerful command-line interface to manage your projects:
 
 ✅ **Phase 0 & 1** (Foundations & Layout) - Complete  
 ✅ **Phase 2** (Full Component Library) - Complete  
-🚧 **Phase 3** (Client-Side Reactivity) - In Progress  
+✅ **Phase 3** (State & Reactivity) - Complete  
+🚧 **Phase 4** (Desktop & CLI Renderers) - Planned
 
 ## Contributing
 

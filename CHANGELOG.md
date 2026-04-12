@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **CLI Tools**: Added `pyui storybook` command to launch the component gallery
   - **Architecture**: Implemented `compose()` method on Pages and `BaseComponent` context manager for declarative UI building
   - **Renderer**: Full Alpine.js integration for interactive components (Modals, Charts, Tabs)
+- **Phase 3: State & Reactivity**
+  - **Persistence**: Added `persist=True` to `ReactiveVar` for automatic `localStorage` synchronization.
+  - **Two-way Binding**: Implemented `x-model` support for all input components.
+  - **Reactive Lists**: Added `List` layout component for dynamic, efficient list rendering.
+  - **Direct Binding**: Updated IR builder to support direct `ReactiveVar` passing to component props without manual lambdas.
+  - **Dev Server**: Added state-update synchronization to the development server.
 
 ### Fixed
 - Resolved `AttributeError` for missing `__version__` in root package
