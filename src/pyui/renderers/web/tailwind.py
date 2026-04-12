@@ -26,13 +26,13 @@ _BUTTON_SIZES: dict[str | None, str] = {
 }
 
 _BUTTON_VARIANTS: dict[str | None, str] = {
-    "primary":   "bg-violet-600 text-white hover:bg-violet-700 focus:ring-violet-500 shadow-sm",
+    "primary": "bg-violet-600 text-white hover:bg-violet-700 focus:ring-violet-500 shadow-sm",
     "secondary": "bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-400",
-    "ghost":     "border border-gray-300 text-gray-700 bg-transparent hover:bg-gray-50 focus:ring-gray-400",
-    "danger":    "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm",
-    "success":   "bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500 shadow-sm",
-    "link":      "text-violet-600 hover:text-violet-700 hover:underline underline-offset-4 p-0 focus:ring-violet-400",
-    None:        "bg-violet-600 text-white hover:bg-violet-700 focus:ring-violet-500 shadow-sm",
+    "ghost": "border border-gray-300 text-gray-700 bg-transparent hover:bg-gray-50 focus:ring-gray-400",
+    "danger": "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm",
+    "success": "bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500 shadow-sm",
+    "link": "text-violet-600 hover:text-violet-700 hover:underline underline-offset-4 p-0 focus:ring-violet-400",
+    None: "bg-violet-600 text-white hover:bg-violet-700 focus:ring-violet-500 shadow-sm",
 }
 
 _BUTTON_DISABLED = "opacity-50 cursor-not-allowed pointer-events-none"
@@ -52,13 +52,13 @@ def button_classes(variant: str | None, size: str | None, disabled: bool = False
 # ── Text ──────────────────────────────────────────────────────────────────────
 
 _TEXT_VARIANTS: dict[str | None, str] = {
-    "muted":  "text-gray-500",
-    "code":   "font-mono text-sm bg-gray-100 px-1.5 py-0.5 rounded text-violet-700",
-    "lead":   "text-lg text-gray-600 leading-relaxed",
-    "small":  "text-xs text-gray-500",
-    "error":  "text-red-600",
-    "success":"text-emerald-600",
-    None:     "text-gray-800",
+    "muted": "text-gray-500",
+    "code": "font-mono text-sm bg-gray-100 px-1.5 py-0.5 rounded text-violet-700",
+    "lead": "text-lg text-gray-600 leading-relaxed",
+    "small": "text-xs text-gray-500",
+    "error": "text-red-600",
+    "success": "text-emerald-600",
+    None: "text-gray-800",
 }
 
 _TEXT_SIZES: dict[str | None, str] = {
@@ -94,9 +94,9 @@ _HEADING_LEVEL_CLASSES: dict[int, str] = {
 
 _HEADING_VARIANTS: dict[str | None, str] = {
     "gradient": "bg-gradient-to-r from-violet-600 to-pink-500 bg-clip-text text-transparent",
-    "muted":    "text-gray-500",
-    "display":  "text-6xl font-extrabold tracking-tighter",
-    None:       "text-gray-900",
+    "muted": "text-gray-500",
+    "display": "text-6xl font-extrabold tracking-tighter",
+    None: "text-gray-900",
 }
 
 
@@ -146,8 +146,8 @@ def grid_classes(cols: int | str, gap: int) -> str:
 # ── Page layouts ──────────────────────────────────────────────────────────────
 
 PAGE_LAYOUT_CLASSES: dict[str, str] = {
-    "default":    "container mx-auto px-4 py-8 max-w-7xl",
+    "default": "container mx-auto px-4 py-8 max-w-7xl",
     "full-width": "w-full px-4 py-8",
-    "sidebar":    "flex gap-6 px-4 py-8 max-w-7xl mx-auto",
-    "auth":       "min-h-screen flex items-center justify-center bg-gray-50 px-4",
+    "sidebar": "flex gap-6 px-4 py-8 max-w-7xl mx-auto",
+    "auth": "min-h-screen flex items-center justify-center bg-gray-50 px-4",
 }

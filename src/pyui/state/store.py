@@ -14,8 +14,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from pyui.state.reactive import ReactiveVar, reactive
 from pyui.exceptions import PyUIError
+from pyui.state.reactive import ReactiveVar, reactive
 
 
 class Store:
@@ -52,8 +52,7 @@ class Store:
         """
         if key in self._state:
             raise PyUIError(
-                f"Store key '{key}' is already defined. "
-                "Use store.get('{key}') to access it."
+                f"Store key '{key}' is already defined. Use store.get('{{key}}') to access it."
             )
         var: ReactiveVar[Any] = reactive(initial)
         self._state[key] = var

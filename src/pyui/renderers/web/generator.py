@@ -12,19 +12,18 @@ Public helpers (for testing and programmatic use):
 
 from __future__ import annotations
 
-import json
 import html as html_module
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from pyui.compiler.ir import IRNode, IRPage, IRTree, build_ir_node, build_ir_page
 from pyui.renderers.web import tailwind as tw
-from pyui.theme.tokens import DEFAULT_TOKENS, BUILT_IN_THEMES
+from pyui.theme.tokens import BUILT_IN_THEMES, DEFAULT_TOKENS
 
 if TYPE_CHECKING:
-    from pyui.app import App
-    from pyui.page import Page
     from pyui.components.base import BaseComponent
+    from pyui.page import Page
 
 
 # ── Page HTML template ────────────────────────────────────────────────────────
@@ -99,13 +98,11 @@ _PAGE_TEMPLATE = """\
 
 # ── CSS variable generation ───────────────────────────────────────────────────
 
+
 def _build_tokens(theme: str | dict[str, str]) -> dict[str, str]:
     """Merge DEFAULT_TOKENS with theme overrides → flat token dict."""
     tokens = dict(DEFAULT_TOKENS)
-    if isinstance(theme, str):
-        overrides = BUILT_IN_THEMES.get(theme, {})
-    else:
-        overrides = theme
+    overrides = BUILT_IN_THEMES.get(theme, {}) if isinstance(theme, str) else theme
     tokens.update(overrides)
     return tokens
 
@@ -122,21 +119,22 @@ def _tokens_to_css_vars(tokens: dict[str, str]) -> str:
 
 # ── Component renderers ───────────────────────────────────────────────────────
 
+
 def _render_node(node: IRNode) -> str:
     """Dispatch an IRNode to the correct component renderer."""
     dispatch = {
-        "button":  _render_button,
-        "text":    _render_text,
+        "button": _render_button,
+        "text": _render_text,
         "heading": _render_heading,
-        "grid":    _render_grid,
-        "page":    _render_page_node,  # page-root wrapper (unused normally)
+        "grid": _render_grid,
+        "page": _render_page_node,  # page-root wrapper (unused normally)
     }
     renderer = dispatch.get(node.type)
     if renderer is None:
         # Unknown component — render as a debug placeholder
         return (
             f'<div class="border-2 border-dashed border-red-300 p-4 rounded text-red-500 text-sm">'
-            f'Unknown component: <code>{html_module.escape(node.type)}</code>'
+            f"Unknown component: <code>{html_module.escape(node.type)}</code>"
             f"</div>"
         )
     return renderer(node)
@@ -147,9 +145,9 @@ def _children_html(node: IRNode) -> str:
 
 
 def _render_button(node: IRNode) -> str:
-    label   = html_module.escape(str(node.props.get("label", "")))
+    label = html_module.escape(str(node.props.get("label", "")))
     loading = node.props.get("loading", False)
-    t       = node.props.get("type", "button")
+    t = node.props.get("type", "button")
     disabled_val = node.props.get("disabled", False)
 
     classes = tw.button_classes(
@@ -160,9 +158,7 @@ def _render_button(node: IRNode) -> str:
 
     # Event handler attr
     click_handler = node.events.get("click")
-    click_attr = (
-        f" onclick=\"__pyuiEvent('{click_handler}')\"" if click_handler else ""
-    )
+    click_attr = f" onclick=\"__pyuiEvent('{click_handler}')\"" if click_handler else ""
     disabled_attr = " disabled" if disabled_val else ""
 
     # Loading spinner
@@ -173,7 +169,8 @@ def _render_button(node: IRNode) -> str:
         '<path class="opacity-75" fill="currentColor" '
         'd="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 '
         '1.135 5.824 3 7.938l3-2.647z"></path></svg>'
-        if loading else ""
+        if loading
+        else ""
     )
 
     return (
@@ -185,10 +182,10 @@ def _render_button(node: IRNode) -> str:
 
 
 def _render_text(node: IRNode) -> str:
-    content    = node.props.get("content", "")
-    element    = node.props.get("element", "span")
-    truncate   = node.props.get("truncate", False)
-    is_react   = node.props.get("is_reactive", False)
+    content = node.props.get("content", "")
+    element = node.props.get("element", "span")
+    truncate = node.props.get("truncate", False)
+    node.props.get("is_reactive", False)
 
     # content is already resolved (callable was called during build_ir_node)
     safe = html_module.escape(str(content))
@@ -203,28 +200,24 @@ def _render_text(node: IRNode) -> str:
 
 
 def _render_heading(node: IRNode) -> str:
-    text     = html_module.escape(str(node.props.get("text", "")))
-    level    = node.props.get("level", 1)
+    text = html_module.escape(str(node.props.get("text", "")))
+    level = node.props.get("level", 1)
     subtitle = node.props.get("subtitle")
-    classes  = tw.heading_classes(level=level, variant=node.style_variant)
+    classes = tw.heading_classes(level=level, variant=node.style_variant)
 
     parts = [f'<h{level} id="{node.node_id}" class="{classes}">{text}</h{level}>']
     if subtitle:
         safe_sub = html_module.escape(str(subtitle))
-        parts.append(
-            f'<p class="mt-2 text-lg text-gray-500">{safe_sub}</p>'
-        )
+        parts.append(f'<p class="mt-2 text-lg text-gray-500">{safe_sub}</p>')
     return "\n".join(parts)
 
 
 def _render_grid(node: IRNode) -> str:
-    cols    = node.props.get("cols", 1)
-    gap     = node.props.get("gap", 4)
+    cols = node.props.get("cols", 1)
+    gap = node.props.get("gap", 4)
     classes = tw.grid_classes(cols=cols, gap=gap)
 
-    inner = "\n".join(
-        f"  {_render_node(child)}" for child in node.children
-    )
+    inner = "\n".join(f"  {_render_node(child)}" for child in node.children)
     return f'<div id="{node.node_id}" class="{classes}">\n{inner}\n</div>'
 
 
@@ -234,6 +227,7 @@ def _render_page_node(node: IRNode) -> str:
 
 
 # ── Full-page HTML builder ────────────────────────────────────────────────────
+
 
 class WebGenerator:
     """
@@ -259,7 +253,7 @@ class WebGenerator:
         # Alpine x-data: dump reactive state as JSON
         state: dict[str, Any] = dict(self.ir_tree.reactive_vars)
         alpine_data = json.dumps(state, default=str)
-        state_json  = json.dumps(state, default=str)
+        state_json = json.dumps(state, default=str)
 
         favicon_tag = ""
         favicon = self.ir_tree.app_meta.get("favicon")
@@ -267,7 +261,9 @@ class WebGenerator:
             favicon_tag = f'<link rel="icon" href="{html_module.escape(favicon)}" />'
 
         return _PAGE_TEMPLATE.format(
-            title=html_module.escape(ir_page.title or self.ir_tree.app_meta.get("name", "PyUI App")),
+            title=html_module.escape(
+                ir_page.title or self.ir_tree.app_meta.get("name", "PyUI App")
+            ),
             description=html_module.escape(self.ir_tree.app_meta.get("description", "")),
             css_vars=css_vars,
             extra_css="",
@@ -301,7 +297,8 @@ class WebGenerator:
 
 # ── Convenience helpers (used in tests and by the dev server) ─────────────────
 
-def render_component(component: "BaseComponent") -> str:
+
+def render_component(component: BaseComponent) -> str:
     """
     Render a single component to an HTML fragment string.
 
@@ -322,7 +319,7 @@ def render_component(component: "BaseComponent") -> str:
 
 
 def render_page(
-    page: "Page",
+    page: Page,
     theme: str | dict[str, str] = "light",
     app_meta: dict[str, Any] | None = None,
 ) -> str:

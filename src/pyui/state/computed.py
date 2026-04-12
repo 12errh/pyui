@@ -16,7 +16,8 @@ Usage::
 
 from __future__ import annotations
 
-from typing import Callable, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from pyui.state.reactive import ReactiveVar
 
@@ -43,7 +44,7 @@ class ComputedVar(ReactiveVar[T]):
         self._value = self._fn()
         return self._value
 
-    def set(self, value: T) -> None:  # type: ignore[override]
+    def set(self, value: T) -> None:
         """Computed vars are read-only. Raises ``AttributeError``."""
         raise AttributeError("Cannot set a computed value directly.")
 

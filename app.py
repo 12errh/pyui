@@ -4,7 +4,7 @@ Demo app for Phase 1 — used to test `pyui run --web` manually.
 Run with: pyui run app.py
 """
 
-from pyui import App, Page, Heading, Text, Button, Grid, reactive
+from pyui import App, Button, Grid, Heading, Page, Text, reactive
 
 
 class DemoApp(App):
@@ -23,9 +23,9 @@ class DemoApp(App):
         Text("Write Python. Render anywhere — Web, Desktop, and CLI.").paragraph(),
         Text(lambda: f"Button clicked {DemoApp.count.get()} times").paragraph().style("muted"),
         Grid(cols=3, gap=4).add(
-            Button("Primary").style("primary").onClick(
-                lambda: DemoApp.count.set(DemoApp.count.get() + 1)
-            ),
+            Button("Primary")
+            .style("primary")
+            .onClick(lambda: DemoApp.count.set(DemoApp.count.get() + 1)),
             Button("Ghost").style("ghost"),
             Button("Danger").style("danger"),
         ),

@@ -13,7 +13,8 @@ Usage::
 
 from __future__ import annotations
 
-from typing import Callable, Generic, TypeVar
+from collections.abc import Callable
+from typing import Any, Generic, TypeVar
 
 T = TypeVar("T")
 
@@ -65,10 +66,10 @@ class ReactiveVar(Generic[T]):
         self._subscribers.append(handler)
 
         def _unsubscribe() -> None:
-            try:
+            import contextlib
+
+            with contextlib.suppress(ValueError):
                 self._subscribers.remove(handler)
-            except ValueError:
-                pass  # Already removed — safe to ignore
 
         return _unsubscribe
 
@@ -79,17 +80,17 @@ class ReactiveVar(Generic[T]):
 
     # ── Arithmetic helpers (convenience) ──────────────────────────────────────
 
-    def __add__(self, other: T) -> "ReactiveVar[T]":  # type: ignore[override]
+    def __add__(self, other: T) -> ReactiveVar[Any]:
         return ReactiveVar(self._value + other)  # type: ignore[operator]
 
-    def __sub__(self, other: T) -> "ReactiveVar[T]":  # type: ignore[override]
+    def __sub__(self, other: T) -> ReactiveVar[Any]:
         return ReactiveVar(self._value - other)  # type: ignore[operator]
 
-    def __mul__(self, other: T) -> "ReactiveVar[T]":  # type: ignore[override]
+    def __mul__(self, other: T) -> ReactiveVar[Any]:
         return ReactiveVar(self._value * other)  # type: ignore[operator]
 
     def __int__(self) -> int:
-        return int(self._value)  # type: ignore[arg-type]
+        return int(self._value)  # type: ignore[no-any-return, call-overload]
 
     def __float__(self) -> float:
         return float(self._value)  # type: ignore[arg-type]
@@ -102,8 +103,8 @@ class ReactiveVar(Generic[T]):
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, ReactiveVar):
-            return self._value == other._value  # type: ignore[comparison-overlap]
-        return self._value == other  # type: ignore[comparison-overlap]
+            return bool(self._value == other._value)
+        return bool(self._value == other)
 
 
 def reactive(initial: T) -> ReactiveVar[T]:

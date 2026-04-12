@@ -29,9 +29,9 @@ class Heading(BaseComponent):
 
     Style variants
     --------------
-    ``"gradient"``  — purple-to-pink gradient text  
-    ``"muted"``     — subdued, secondary heading  
-    ``"display"``   — extra-large, hero-size heading  
+    ``"gradient"``  — purple-to-pink gradient text
+    ``"muted"``     — subdued, secondary heading
+    ``"display"``   — extra-large, hero-size heading
     """
 
     component_type = "heading"
@@ -43,16 +43,13 @@ class Heading(BaseComponent):
         self.props: dict[str, Any] = {
             "text": text,
             "level": level,
-            "subtitle": None,   # Optional subtitle rendered below heading
+            "subtitle": None,  # Optional subtitle rendered below heading
         }
 
-    def subtitle(self, text: str) -> "Heading":
+    def subtitle(self, text: str) -> Heading:
         """Add a subtitle rendered directly beneath the heading."""
         self.props["subtitle"] = text
         return self
 
     def __repr__(self) -> str:
-        return (
-            f"Heading(text={self.props['text']!r}, "
-            f"level={self.props['level']!r})"
-        )
+        return f"Heading(text={self.props['text']!r}, level={self.props['level']!r})"

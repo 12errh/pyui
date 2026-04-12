@@ -27,11 +27,11 @@ class Button(BaseComponent):
 
     Style variants
     --------------
-    ``"primary"``  — filled, brand colour  
-    ``"secondary"``— subtle filled  
-    ``"ghost"``    — transparent with border  
-    ``"danger"``   — red, for destructive actions  
-    ``"link"``     — looks like an inline link  
+    ``"primary"``  — filled, brand colour
+    ``"secondary"``— subtle filled
+    ``"ghost"``    — transparent with border
+    ``"danger"``   — red, for destructive actions
+    ``"link"``     — looks like an inline link
 
     Size presets
     ------------
@@ -44,23 +44,23 @@ class Button(BaseComponent):
         super().__init__()
         self.props: dict[str, Any] = {
             "label": label,
-            "type": "button",   # HTML type attr: "button" | "submit" | "reset"
+            "type": "button",  # HTML type attr: "button" | "submit" | "reset"
             "loading": False,
-            "icon": None,       # Optional icon name (left of label)
-            "icon_right": None, # Optional icon name (right of label)
+            "icon": None,  # Optional icon name (left of label)
+            "icon_right": None,  # Optional icon name (right of label)
         }
 
-    def submit(self) -> "Button":
+    def submit(self) -> Button:
         """Set HTML type to ``"submit"`` (for use inside a ``Form``)."""
         self.props["type"] = "submit"
         return self
 
-    def loading(self, state: bool = True) -> "Button":
+    def loading(self, state: bool = True) -> Button:
         """Show a loading spinner inside the button."""
         self.props["loading"] = state
         return self
 
-    def icon(self, name: str, position: str = "left") -> "Button":
+    def icon(self, name: str, position: str = "left") -> Button:
         """
         Attach an icon to the button.
 

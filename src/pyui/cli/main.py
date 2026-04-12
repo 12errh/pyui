@@ -7,9 +7,9 @@ All subcommands live under the ``pyui`` group. Run ``pyui --help`` for usage.
 from __future__ import annotations
 
 import click
+from rich import box
 from rich.console import Console
 from rich.panel import Panel
-from rich import box
 
 import pyui
 from pyui.utils.logging import configure_logging
@@ -18,6 +18,7 @@ console = Console()
 
 
 # ── Main group ────────────────────────────────────────────────────────────────
+
 
 @click.group(
     context_settings={"help_option_names": ["-h", "--help"]},
@@ -47,6 +48,7 @@ def main(ctx: click.Context, verbose: bool) -> None:
 
 # ── new ───────────────────────────────────────────────────────────────────────
 
+
 @main.command("new")
 @click.argument("name")
 @click.option(
@@ -74,9 +76,11 @@ def cmd_new(name: str, template: str, target: str) -> None:
 
 # ── run ───────────────────────────────────────────────────────────────────────
 
+
 @main.command("run")
 @click.option(
-    "--target", "-t",
+    "--target",
+    "-t",
     default="web",
     type=click.Choice(["web", "desktop", "cli"]),
     show_default=True,
@@ -84,7 +88,9 @@ def cmd_new(name: str, template: str, target: str) -> None:
 )
 @click.option("--port", "-p", default=8000, show_default=True, help="Dev server port.")
 @click.option("--host", default="localhost", show_default=True, help="Dev server host.")
-@click.option("--no-browser", is_flag=True, default=False, help="Do not open browser automatically.")
+@click.option(
+    "--no-browser", is_flag=True, default=False, help="Do not open browser automatically."
+)
 @click.argument("app_file", default="app.py", required=False)
 def cmd_run(target: str, port: int, host: str, no_browser: bool, app_file: str) -> None:
     """Start the PyUI dev server (APP_FILE defaults to app.py)."""
@@ -97,23 +103,27 @@ def cmd_run(target: str, port: int, host: str, no_browser: bool, app_file: str) 
 
     try:
         from pyui.compiler.discovery import discover_app
+
         AppClass = discover_app(app_file)
     except FileNotFoundError:
         console.print(f"[red]Error:[/red] App file not found: [cyan]{app_file}[/cyan]")
-        raise SystemExit(1)
+        raise SystemExit(1) from None
     except Exception as exc:
         console.print(f"[red]Error:[/red] {exc}")
-        raise SystemExit(1)
+        raise SystemExit(1) from None
 
     from pyui.server.dev_server import run_dev_server
+
     run_dev_server(AppClass, host=host, port=port, open_browser=not no_browser)
 
 
 # ── build ─────────────────────────────────────────────────────────────────────
 
+
 @main.command("build")
 @click.option(
-    "--target", "-t",
+    "--target",
+    "-t",
     default="web",
     type=click.Choice(["web", "desktop", "cli", "all"]),
     show_default=True,
@@ -131,36 +141,36 @@ def cmd_build(target: str, out: str, app_file: str) -> None:
 
     try:
         from pyui.compiler.discovery import discover_app
+
         AppClass = discover_app(app_file)
     except Exception as exc:
         console.print(f"[red]Error:[/red] {exc}")
-        raise SystemExit(1)
+        raise SystemExit(1) from None
 
     from pyui.compiler import compile_app
+
     output_path = compile_app(AppClass, target=target, output_dir=out)
-    console.print(
-        f"[green]Built[/green] [cyan]{app_file}[/cyan] -> [cyan]{output_path}[/cyan]"
-    )
+    console.print(f"[green]Built[/green] [cyan]{app_file}[/cyan] -> [cyan]{output_path}[/cyan]")
 
 
 # ── publish ───────────────────────────────────────────────────────────────────
+
 
 @main.command("publish")
 @click.option("--name", default=None, help="Override package name.")
 def cmd_publish(name: str | None) -> None:
     """Publish a component package to the PyUI marketplace."""
-    console.print(
-        "[yellow]![/yellow]  [bold]pyui publish[/bold] is not yet implemented (Phase 5)."
-    )
+    console.print("[yellow]![/yellow]  [bold]pyui publish[/bold] is not yet implemented (Phase 5).")
 
 
 # ── doctor ────────────────────────────────────────────────────────────────────
 
+
 @main.command("doctor")
 def cmd_doctor() -> None:
     """Check environment health (Python version, dependencies, ports)."""
-    import sys
     import platform
+    import sys
 
     console.print("[bold]PyUI Doctor[/bold]\n")
     console.print(f"  Python   : [cyan]{sys.version.split()[0]}[/cyan]")
@@ -170,12 +180,11 @@ def cmd_doctor() -> None:
     py_ok = sys.version_info >= (3, 10)
     status = "[green]OK[/green]" if py_ok else "[red]FAIL -- upgrade to Python 3.10+[/red]"
     console.print(f"  Python >= 3.10 : {status}")
-    console.print(
-        "\n[dim]Full dependency checks will be added in Phase 6.[/dim]"
-    )
+    console.print("\n[dim]Full dependency checks will be added in Phase 6.[/dim]")
 
 
 # ── lint ──────────────────────────────────────────────────────────────────────
+
 
 @main.command("lint")
 @click.argument("app_file", default="app.py", required=False)
@@ -188,6 +197,7 @@ def cmd_lint(app_file: str) -> None:
 
 
 # ── info ──────────────────────────────────────────────────────────────────────
+
 
 @main.command("info")
 def cmd_info() -> None:

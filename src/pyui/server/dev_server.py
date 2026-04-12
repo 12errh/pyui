@@ -13,6 +13,7 @@ Usage (internal — called by the CLI ``run`` command)::
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import webbrowser
 from typing import TYPE_CHECKING, Any
@@ -45,7 +46,7 @@ class PyUIDevServer:
 
     def __init__(
         self,
-        app_class: "type[App]",
+        app_class: type[App],
         host: str = "localhost",
         port: int = 8000,
         open_browser: bool = True,
@@ -110,10 +111,8 @@ class PyUIDevServer:
                 content_type="application/json",
             )
 
-        try:
-            body = await request.json() if request.body_exists else {}
-        except Exception:
-            body = {}
+        with contextlib.suppress(Exception):
+            await request.json() if request.body_exists else {}
 
         try:
             result = handler()
@@ -129,7 +128,9 @@ class PyUIDevServer:
 
         # Snapshot updated reactive state
         import inspect
+
         from pyui.state.reactive import ReactiveVar
+
         state: dict[str, Any] = {}
         for attr_name, value in inspect.getmembers(self.app_class):
             if isinstance(value, ReactiveVar):
@@ -146,7 +147,7 @@ class PyUIDevServer:
         await ws.prepare(request)
         await ws.send_json({"type": "connected", "version": "0.1.0"})
         log.debug("WebSocket client connected", remote=str(request.remote))
-        async for msg in ws:
+        async for _msg in ws:
             pass  # Hot-reload messages handled in Phase 6
         return ws
 
@@ -155,6 +156,7 @@ class PyUIDevServer:
     @staticmethod
     def _not_found_html(path: str) -> str:
         import html as h
+
         return f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><title>404 — PyUI</title>
 <script src="https://cdn.tailwindcss.com"></script></head>
@@ -183,9 +185,10 @@ class PyUIDevServer:
         aio_app = self.build_aiohttp_app()
         url = f"http://{self.host}:{self.port}"
 
-        from rich.console import Console
         from rich import box
+        from rich.console import Console
         from rich.panel import Panel
+
         console = Console()
         console.print(
             Panel.fit(
@@ -201,10 +204,13 @@ class PyUIDevServer:
 
         if self.open_browser:
             import threading
+
             def _open() -> None:
                 import time
+
                 time.sleep(0.8)
                 webbrowser.open(url)
+
             threading.Thread(target=_open, daemon=True).start()
 
         web.run_app(
@@ -216,7 +222,7 @@ class PyUIDevServer:
 
 
 def run_dev_server(
-    app_class: "type[App]",
+    app_class: type[App],
     host: str = "localhost",
     port: int = 8000,
     open_browser: bool = True,

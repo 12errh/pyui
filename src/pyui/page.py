@@ -17,7 +17,8 @@ Example::
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from pyui.components.base import BaseComponent
@@ -61,29 +62,29 @@ class Page:
 
     # ── Child management ─────────────────────────────────────────────────────
 
-    def add(self, *components: "BaseComponent") -> "Page":
+    def add(self, *components: BaseComponent) -> Page:
         """Append one or more child components. Returns *self* for chaining."""
         self.children.extend(components)
         return self
 
-    def remove(self, component: "BaseComponent") -> "Page":
+    def remove(self, component: BaseComponent) -> Page:
         """Remove a child component."""
         self.children.remove(component)
         return self
 
-    def clear(self) -> "Page":
+    def clear(self) -> Page:
         """Remove all child components."""
         self.children.clear()
         return self
 
     # ── Lifecycle hooks ───────────────────────────────────────────────────────
 
-    def on_enter(self, handler: Callable[..., Any]) -> "Page":
+    def on_enter(self, handler: Callable[..., Any]) -> Page:
         """Register a callback that fires when the user navigates *to* this page."""
         self._on_enter = handler
         return self
 
-    def on_leave(self, handler: Callable[..., Any]) -> "Page":
+    def on_leave(self, handler: Callable[..., Any]) -> Page:
         """Register a callback that fires when the user navigates *away* from this page."""
         self._on_leave = handler
         return self

@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from pyui.app import App
 
 
-def discover_app(module_path: str) -> "type[App]":
+def discover_app(module_path: str) -> type[App]:
     """
     Import the Python module at *module_path* and return the first
     :class:`~pyui.app.App` subclass found.
@@ -65,30 +65,26 @@ def discover_app(module_path: str) -> "type[App]":
     module = importlib.util.module_from_spec(spec)
 
     try:
-        spec.loader.exec_module(module)  # type: ignore[union-attr]
+        spec.loader.exec_module(module)
     except Exception as exc:
         raise PyUIError(f"Error importing '{path}': {exc}") from exc
 
     # Find all App subclasses defined in this module
     candidates: list[type[App]] = []
     for _name, obj in inspect.getmembers(module, inspect.isclass):
-        if (
-            issubclass(obj, App)
-            and obj is not App
-            and obj.__module__ == module_name
-        ):
+        if issubclass(obj, App) and obj is not App and obj.__module__ == module_name:
             candidates.append(obj)
 
     if not candidates:
         raise PyUIError(
-            f"No App subclass found in '{path}'. "
-            "Create a class that inherits from 'pyui.App'."
+            f"No App subclass found in '{path}'. Create a class that inherits from 'pyui.App'."
         )
 
     if len(candidates) > 1:
         names = [c.__name__ for c in candidates]
         # Take the first one, warn about ambiguity
         import warnings
+
         warnings.warn(
             f"Multiple App subclasses found: {names}. "
             f"Using '{names[0]}'. Add an 'app' attribute to disambiguate.",

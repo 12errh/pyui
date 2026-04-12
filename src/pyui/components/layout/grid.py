@@ -53,16 +53,16 @@ class Grid(BaseComponent):
             "cols": cols,
             "gap": gap,
             "rows": rows,
-            "align": "stretch",   # "start" | "center" | "end" | "stretch"
-            "justify": "start",   # "start" | "center" | "end" | "between"
+            "align": "stretch",  # "start" | "center" | "end" | "stretch"
+            "justify": "start",  # "start" | "center" | "end" | "between"
         }
 
-    def align(self, value: str) -> "Grid":
+    def align(self, value: str) -> Grid:
         """Set ``align-items``. One of ``"start"``, ``"center"``, ``"end"``, ``"stretch"``."""
         self.props["align"] = value
         return self
 
-    def justify(self, value: str) -> "Grid":
+    def justify(self, value: str) -> Grid:
         """Set ``justify-items``. One of ``"start"``, ``"center"``, ``"end"``, ``"between"``."""
         self.props["justify"] = value
         return self

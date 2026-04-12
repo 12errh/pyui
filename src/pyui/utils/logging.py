@@ -21,6 +21,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
+from typing import Any
 
 import structlog
 
@@ -69,6 +70,6 @@ def configure_logging(level: str = "INFO") -> None:
     )
 
 
-def get_logger(name: str) -> structlog.stdlib.BoundLogger:
+def get_logger(name: str) -> Any:
     """Return a bound structlog logger for *name*."""
-    return structlog.get_logger(name)  # type: ignore[return-value]
+    return structlog.get_logger(name)

@@ -7,12 +7,11 @@ Public API:
     build_ir_tree(app_class)                   — build intermediate representation
 """
 
-from pyui.compiler.discovery import discover_app
-from pyui.compiler.ir import build_ir_node, build_ir_page, build_ir_tree, IRNode, IRPage, IRTree
-
-import os
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+from pyui.compiler.discovery import discover_app
+from pyui.compiler.ir import IRNode, IRPage, IRTree, build_ir_node, build_ir_page, build_ir_tree
 
 if TYPE_CHECKING:
     from pyui.app import App
@@ -45,13 +44,12 @@ def compile_app(
 
     if target == "web":
         from pyui.renderers.web.generator import WebGenerator
+
         ir = build_ir_tree(app_class)
         gen = WebGenerator(ir)
         gen.write_to_disk(out)
     else:
-        raise NotImplementedError(
-            f"Target '{target}' is not yet implemented. Use 'web' for now."
-        )
+        raise NotImplementedError(f"Target '{target}' is not yet implemented. Use 'web' for now.")
 
     return out
 

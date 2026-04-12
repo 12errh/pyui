@@ -18,13 +18,14 @@ Public functions:
 from __future__ import annotations
 
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from pyui.app import App
-    from pyui.page import Page
     from pyui.components.base import BaseComponent
+    from pyui.page import Page
 
 # Global event-handler registry — maps handler_id → callable.
 # The dev server looks handlers up here on each event POST.
@@ -49,6 +50,7 @@ def clear_registry() -> None:
 
 
 # ── Dataclasses ───────────────────────────────────────────────────────────────
+
 
 @dataclass
 class IRNode:
@@ -77,7 +79,7 @@ class IRNode:
 
     type: str
     props: dict[str, Any]
-    children: list["IRNode"] = field(default_factory=list)
+    children: list[IRNode] = field(default_factory=list)
     events: dict[str, str] = field(default_factory=dict)
     reactive_bindings: list[str] = field(default_factory=list)
     style_variant: str | None = None
@@ -92,7 +94,7 @@ class IRPage:
     route: str
     title: str
     layout: str
-    children: list[IRNode]      # top-level component nodes on this page
+    children: list[IRNode]  # top-level component nodes on this page
     meta: dict[str, str] = field(default_factory=dict)
 
 
@@ -103,13 +105,14 @@ class IRTree:
     app_meta: dict[str, Any]
     pages: list[IRPage]
     theme: str | dict[str, str]
-    reactive_vars: dict[str, Any]   # key → current value snapshot
+    reactive_vars: dict[str, Any]  # key → current value snapshot
     event_handlers: dict[str, Callable[..., Any]]  # id → callable
 
 
 # ── Builder functions ─────────────────────────────────────────────────────────
 
-def build_ir_node(component: "BaseComponent") -> IRNode:
+
+def build_ir_node(component: BaseComponent) -> IRNode:
     """
     Recursively convert a :class:`~pyui.components.base.BaseComponent`
     into an :class:`IRNode`.
@@ -126,10 +129,10 @@ def build_ir_node(component: "BaseComponent") -> IRNode:
     # Register event handlers
     events: dict[str, str] = {}
     handler_map = {
-        "click":   component._on_click,
-        "change":  component._on_change,
-        "hover":   component._on_hover,
-        "mount":   component._on_mount,
+        "click": component._on_click,
+        "change": component._on_change,
+        "hover": component._on_hover,
+        "mount": component._on_mount,
         "unmount": component._on_unmount,
     }
     for event_name, handler in handler_map.items():
@@ -166,7 +169,7 @@ def build_ir_node(component: "BaseComponent") -> IRNode:
     )
 
 
-def build_ir_page(page: "Page") -> IRPage:
+def build_ir_page(page: Page) -> IRPage:
     """
     Convert a :class:`~pyui.page.Page` into an :class:`IRPage`.
 
@@ -188,7 +191,7 @@ def build_ir_page(page: "Page") -> IRPage:
     )
 
 
-def build_ir_tree(app_class: "type[App]") -> "IRTree":
+def build_ir_tree(app_class: type[App]) -> IRTree:
     """
     Build the complete :class:`IRTree` for an entire :class:`~pyui.app.App`.
 
@@ -202,6 +205,7 @@ def build_ir_tree(app_class: "type[App]") -> "IRTree":
     IRTree
     """
     import inspect
+
     from pyui.state.reactive import ReactiveVar
 
     # Collect reactive vars from the App class
@@ -214,10 +218,10 @@ def build_ir_tree(app_class: "type[App]") -> "IRTree":
 
     return IRTree(
         app_meta={
-            "name":        app_class.name,
-            "version":     app_class.version,
+            "name": app_class.name,
+            "version": app_class.version,
             "description": app_class.description,
-            "favicon":     app_class.favicon,
+            "favicon": app_class.favicon,
         },
         pages=pages,
         theme=app_class.theme,

@@ -10,7 +10,8 @@ All mutating methods return *self* to enable method chaining::
 from __future__ import annotations
 
 import uuid
-from typing import Any, Callable, TYPE_CHECKING
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from pyui.state.reactive import ReactiveVar
@@ -60,44 +61,44 @@ class BaseComponent:
 
     # ── Style & layout ────────────────────────────────────────────────────────
 
-    def style(self, variant: str) -> "BaseComponent":
+    def style(self, variant: str) -> BaseComponent:
         """Set the style variant (e.g. ``"primary"``, ``"ghost"``, ``"danger"``)."""
         self._style_variant = variant
         return self
 
-    def size(self, size: str) -> "BaseComponent":
+    def size(self, size: str) -> BaseComponent:
         """Set the size (``"xs"``, ``"sm"``, ``"md"``, ``"lg"``, ``"xl"``)."""
         self._size = size
         return self
 
-    def margin(self, *args: str | int) -> "BaseComponent":
+    def margin(self, *args: str | int) -> BaseComponent:
         """CSS-style margin shorthand — up to 4 values."""
         self._margin = args
         return self
 
-    def padding(self, *args: str | int) -> "BaseComponent":
+    def padding(self, *args: str | int) -> BaseComponent:
         """CSS-style padding shorthand — up to 4 values."""
         self._padding = args
         return self
 
-    def width(self, value: str | int) -> "BaseComponent":
+    def width(self, value: str | int) -> BaseComponent:
         """Set width (e.g. ``"100%"``, ``400``, ``"auto"``)."""
         self._width = value
         return self
 
-    def height(self, value: str | int) -> "BaseComponent":
+    def height(self, value: str | int) -> BaseComponent:
         """Set height."""
         self._height = value
         return self
 
-    def className(self, *classes: str) -> "BaseComponent":
+    def className(self, *classes: str) -> BaseComponent:
         """Append raw CSS class names (escape hatch for advanced users)."""
         self._classes.extend(classes)
         return self
 
     # ── Visibility & state ────────────────────────────────────────────────────
 
-    def hidden(self, condition: "bool | ReactiveVar[bool]") -> "BaseComponent":
+    def hidden(self, condition: bool | ReactiveVar[bool]) -> BaseComponent:
         """
         Hide the component when *condition* is truthy.
         Accepts a plain ``bool`` or a :class:`~pyui.state.reactive.ReactiveVar`.
@@ -105,58 +106,58 @@ class BaseComponent:
         self._hidden = condition
         return self
 
-    def disabled(self, condition: "bool | ReactiveVar[bool]") -> "BaseComponent":
+    def disabled(self, condition: bool | ReactiveVar[bool]) -> BaseComponent:
         """Disable the component when *condition* is truthy."""
         self._disabled = condition
         return self
 
     # ── Identity ──────────────────────────────────────────────────────────────
 
-    def id(self, identifier: str) -> "BaseComponent":
+    def id(self, identifier: str) -> BaseComponent:
         """Override the auto-generated element ID."""
         self._id = identifier
         return self
 
     # ── Event handlers ────────────────────────────────────────────────────────
 
-    def onClick(self, handler: Callable[..., Any]) -> "BaseComponent":  # noqa: N802
+    def onClick(self, handler: Callable[..., Any]) -> BaseComponent:  # noqa: N802
         """Register a click handler."""
         self._on_click = handler
         return self
 
-    def onChange(self, handler: Callable[..., Any]) -> "BaseComponent":  # noqa: N802
+    def onChange(self, handler: Callable[..., Any]) -> BaseComponent:  # noqa: N802
         """Register a change handler (input, select, toggle, etc.)."""
         self._on_change = handler
         return self
 
-    def onHover(self, handler: Callable[..., Any]) -> "BaseComponent":  # noqa: N802
+    def onHover(self, handler: Callable[..., Any]) -> BaseComponent:  # noqa: N802
         """Register a hover handler."""
         self._on_hover = handler
         return self
 
-    def onMount(self, handler: Callable[..., Any]) -> "BaseComponent":  # noqa: N802
+    def onMount(self, handler: Callable[..., Any]) -> BaseComponent:  # noqa: N802
         """Register a mount lifecycle handler."""
         self._on_mount = handler
         return self
 
-    def onUnmount(self, handler: Callable[..., Any]) -> "BaseComponent":  # noqa: N802
+    def onUnmount(self, handler: Callable[..., Any]) -> BaseComponent:  # noqa: N802
         """Register an unmount lifecycle handler."""
         self._on_unmount = handler
         return self
 
     # ── Children ─────────────────────────────────────────────────────────────
 
-    def add(self, *children: "BaseComponent") -> "BaseComponent":
+    def add(self, *children: BaseComponent) -> BaseComponent:
         """Append child components. Returns *self* for chaining."""
         self.children.extend(children)
         return self
 
-    def remove(self, child: "BaseComponent") -> "BaseComponent":
+    def remove(self, child: BaseComponent) -> BaseComponent:
         """Remove a specific child."""
         self.children.remove(child)
         return self
 
-    def clear(self) -> "BaseComponent":
+    def clear(self) -> BaseComponent:
         """Remove all children."""
         self.children.clear()
         return self
