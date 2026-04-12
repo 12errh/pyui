@@ -187,7 +187,14 @@ def _render_node(node: IRNode) -> str:
             f"Unknown component: <code>{html_module.escape(node.type)}</code>"
             f"</div>"
         )
-    return renderer(node)
+    html = renderer(node)
+
+    # Inject custom CSS classes if any are defined for the node
+    custom_class = node.props.get("class_name", "").strip()
+    if custom_class and ' class="' in html:
+        html = html.replace(' class="', f' class="{custom_class} ', 1)
+
+    return html
 
 
 def _children_html(node: IRNode) -> str:

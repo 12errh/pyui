@@ -143,6 +143,7 @@ def build_ir_node(component: BaseComponent) -> IRNode:
     # Detect reactive props
     reactive_bindings: list[str] = []
     props_copy = dict(component.props)
+    props_copy["class_name"] = " ".join(component._classes)
 
     # If content prop is a callable (reactive lambda), resolve it now
     # and mark that this node is reactive.
@@ -189,6 +190,9 @@ def build_ir_page(page: Page) -> IRPage:
     -------
     IRPage
     """
+    # Clear children before compose() to prevent duplication during hot reloads
+    page.children.clear()
+
     # Call compose() to populate the children tree if using declarative style
     if hasattr(page, "compose") and callable(page.compose):
         with page:

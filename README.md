@@ -26,8 +26,18 @@ cd my-app
 pyui storybook       # → Explore the component gallery
 ```
 
-## Example
+## Examples
 
+### Advanced Portfolio UI Demo
+PyUI includes a stunning, high-fidelity portfolio landing page demonstrating complex compositional techniques such as glassmorphism, responsive grids, intersecting absolute positioning, micro-animations, and pure Python UI component nesting.
+
+```bash
+# Run the advanced portfolio demo
+python tests/portfolio.py
+```
+*(Open http://localhost:9010 to view the portfolio)*
+
+### Counter Application
 ```python
 from pyui import App, Page, Heading, Text, Flex, Button, reactive
 
