@@ -22,10 +22,11 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
+from pyui.components.base import BaseComponent
+from pyui.page import Page
+
 if TYPE_CHECKING:
     from pyui.app import App
-    from pyui.components.base import BaseComponent
-    from pyui.page import Page
 
 # Global event-handler registry — maps handler_id → callable.
 # The dev server looks handlers up here on each event POST.
@@ -155,6 +156,13 @@ def build_ir_node(component: BaseComponent) -> IRNode:
             except Exception:
                 props_copy[key] = ""
 
+    # Recursively build slots (any prop that is a BaseComponent or list of BaseComponents)
+    for key, val in props_copy.items():
+        if isinstance(val, BaseComponent):
+            props_copy[key] = build_ir_node(val)
+        elif isinstance(val, list) and val and isinstance(val[0], BaseComponent):
+            props_copy[key] = [build_ir_node(item) for item in val]
+
     # Recursively build children
     children = [build_ir_node(child) for child in component.children]
 
@@ -181,6 +189,11 @@ def build_ir_page(page: Page) -> IRPage:
     -------
     IRPage
     """
+    # Call compose() to populate the children tree if using declarative style
+    if hasattr(page, "compose") and callable(page.compose):
+        with page:
+            page.compose()
+
     children = [build_ir_node(c) for c in page.children]
     return IRPage(
         route=page.route or "/",

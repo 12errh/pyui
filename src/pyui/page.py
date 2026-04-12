@@ -23,6 +23,8 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from pyui.components.base import BaseComponent
 
+from pyui.components.base import _CONTEXT_STACK
+
 
 class Page:
     """
@@ -45,16 +47,17 @@ class Page:
 
     def __init__(
         self,
-        title: str = "",
+        title: str | None = None,
         route: str | None = None,
-        layout: str = "default",
+        layout: str | None = None,
         meta: dict[str, str] | None = None,
         guard: Callable[..., Any] | None = None,
     ) -> None:
-        self.title = title
-        self.route = route
-        self.layout = layout
-        self.meta: dict[str, str] = meta or {}
+        # Use class attributes as defaults if not provided to constructor
+        self.title = title if title is not None else getattr(self, "title", "")
+        self.route = route if route is not None else getattr(self, "route", None)
+        self.layout = layout if layout is not None else getattr(self, "layout", "default")
+        self.meta: dict[str, str] = meta if meta is not None else getattr(self, "meta", {})
         self.guard = guard
         self.children: list[BaseComponent] = []
         self._on_enter: Callable[..., Any] | None = None
@@ -88,6 +91,16 @@ class Page:
         """Register a callback that fires when the user navigates *away* from this page."""
         self._on_leave = handler
         return self
+
+    # ── Context Manager (for declarative composition) ───────────────────────
+
+    def __enter__(self) -> Page:
+        _CONTEXT_STACK.append(self)
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        if _CONTEXT_STACK and _CONTEXT_STACK[-1] is self:
+            _CONTEXT_STACK.pop()
 
     # ── Dunder helpers ────────────────────────────────────────────────────────
 

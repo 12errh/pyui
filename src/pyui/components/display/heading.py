@@ -36,14 +36,14 @@ class Heading(BaseComponent):
 
     component_type = "heading"
 
-    def __init__(self, text: str = "", level: int = 1) -> None:
+    def __init__(self, text: str = "", level: int = 1, subtitle: str | None = None) -> None:
         super().__init__()
         if not 1 <= level <= 6:
             raise ValueError(f"Heading level must be 1–6, got {level!r}.")
         self.props: dict[str, Any] = {
             "text": text,
             "level": level,
-            "subtitle": None,  # Optional subtitle rendered below heading
+            "subtitle": subtitle,
         }
 
     def subtitle(self, text: str) -> Heading:

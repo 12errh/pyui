@@ -50,10 +50,10 @@ dev = [
 pyui = "pyui.cli.main:main"
 
 [project.urls]
-Homepage = "https://github.com/pyui-framework/pyui"
+Homepage = "https://github.com/12errh/pyui"
 Documentation = "https://pyui.dev"
-Repository = "https://github.com/pyui-framework/pyui"
-Issues = "https://github.com/pyui-framework/pyui/issues"
+Repository = "https://github.com/12errh/pyui"
+Issues = "https://github.com/12errh/pyui/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pyui"]

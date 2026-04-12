@@ -1,7 +1,7 @@
 # PyUI — Product & Technical Requirements Document
 
-**Version:** 1.0.0  
-**Status:** Draft  
+**Version:** 0.1.0  
+**Status:** Stable (Phase 2 Complete)  
 **Author:** PyUI Core Team  
 **Last Updated:** April 2026
 
@@ -33,10 +33,10 @@
    - 3.11 Security Requirements
    - 3.12 Accessibility Requirements
 4. [Development Phases](#4-development-phases)
-   - Phase 0: Project Setup & Foundations
-   - Phase 1: Core Compiler (Web)
-   - Phase 2: Component Library
-   - Phase 3: State & Reactivity
+   - Phase 0: Project Setup & Foundations (Done)
+   - Phase 1: Core Compiler (Web) (Done)
+   - Phase 2: Component Library (Done)
+   - Phase 3: State & Reactivity (In Progress)
    - Phase 4: Desktop & CLI Renderers
    - Phase 5: Theme Engine & Marketplace
    - Phase 6: Developer Tooling & Hot Reload

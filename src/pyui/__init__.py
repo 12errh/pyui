@@ -1,67 +1,116 @@
-"""
-PyUI — Write Python. Render anywhere.
-
-Web · Desktop · CLI from a single Python codebase.
-"""
-
-from __future__ import annotations
-
 __version__ = "0.1.0"
-__author__ = "PyUI Core Team"
-__license__ = "MIT"
 
-# ── Core classes ─────────────────────────────────────────────────────────────
 from pyui.app import App
-
-# ── Compiler public API ───────────────────────────────────────────────────────
-from pyui.compiler import compile_app
-
-# ── Components ────────────────────────────────────────────────────────────────
 from pyui.components.base import BaseComponent
-from pyui.components.display.heading import Heading
-from pyui.components.display.text import Text
-from pyui.components.input.button import Button
-from pyui.components.layout.grid import Grid
-
-# ── Exceptions ────────────────────────────────────────────────────────────────
-from pyui.exceptions import (
-    CompilerError,
-    ComponentError,
-    PluginError,
-    PyUIError,
-    ThemeError,
+from pyui.components.data import Chart, Stat, Table
+from pyui.components.display import (
+    Avatar,
+    Badge,
+    Heading,
+    Icon,
+    Image,
+    Markdown,
+    Tag,
+    Text,
+)
+from pyui.components.feedback import (
+    Alert,
+    Drawer,
+    Modal,
+    Progress,
+    Skeleton,
+    Spinner,
+    Toast,
+    Tooltip,
+)
+from pyui.components.input import (
+    Button,
+    Checkbox,
+    DatePicker,
+    FilePicker,
+    Form,
+    Input,
+    Radio,
+    Select,
+    Slider,
+    Textarea,
+    Toggle,
+)
+from pyui.components.layout import (
+    Container,
+    Divider,
+    Flex,
+    Grid,
+    Sidebar,
+    Spacer,
+    Split,
+    Stack,
+)
+from pyui.components.media import Video
+from pyui.components.navigation import (
+    Breadcrumb,
+    Menu,
+    Nav,
+    Pagination,
+    Tabs,
 )
 from pyui.page import Page
-from pyui.state.computed import computed
-
-# ── State system ─────────────────────────────────────────────────────────────
-from pyui.state.reactive import ReactiveVar, reactive
-from pyui.state.store import Store, store
+from pyui.state.reactive import reactive
 
 __all__ = [
-    # Meta
-    "__version__",
-    # Core
     "App",
     "Page",
-    # State
-    "ReactiveVar",
     "reactive",
-    "computed",
-    "Store",
-    "store",
-    # Components
     "BaseComponent",
-    "Button",
-    "Text",
-    "Heading",
+    "# Layout",
+    "Container",
+    "Divider",
+    "Flex",
     "Grid",
-    # Compiler
-    "compile_app",
-    # Exceptions
-    "PyUIError",
-    "CompilerError",
-    "ComponentError",
-    "ThemeError",
-    "PluginError",
+    "Sidebar",
+    "Spacer",
+    "Split",
+    "Stack",
+    "# Display",
+    "Avatar",
+    "Badge",
+    "Heading",
+    "Icon",
+    "Image",
+    "Markdown",
+    "Tag",
+    "Text",
+    "# Input",
+    "Button",
+    "Checkbox",
+    "DatePicker",
+    "FilePicker",
+    "Form",
+    "Input",
+    "Radio",
+    "Select",
+    "Slider",
+    "Textarea",
+    "Toggle",
+    "# Feedback",
+    "Alert",
+    "Drawer",
+    "Modal",
+    "Progress",
+    "Skeleton",
+    "Spinner",
+    "Toast",
+    "Tooltip",
+    "# Data",
+    "Chart",
+    "Stat",
+    "Table",
+    "# Navigation",
+    "Nav",
+    "Tabs",
+    "Breadcrumb",
+    "Pagination",
+    "Menu",
+    "# Media",
+    "Video",
 ]

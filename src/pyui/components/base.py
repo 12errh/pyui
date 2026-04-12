@@ -19,6 +19,9 @@ if TYPE_CHECKING:
 # Sentinel for "not set"
 _UNSET: Any = object()
 
+# Global stack of active containers (BaseComponent or Page)
+_CONTEXT_STACK: list[Any] = []
+
 
 class BaseComponent:
     """
@@ -55,6 +58,12 @@ class BaseComponent:
 
         # Children
         self.children: list[BaseComponent] = []
+
+        # Auto-register with parent context if inside a 'with' block
+        if _CONTEXT_STACK:
+            parent = _CONTEXT_STACK[-1]
+            if hasattr(parent, "add"):
+                parent.add(self)
 
         # Extra arbitrary props (set by subclasses)
         self.props: dict[str, Any] = {}
@@ -161,6 +170,16 @@ class BaseComponent:
         """Remove all children."""
         self.children.clear()
         return self
+
+    # ── Context Manager (for declarative composition) ───────────────────────
+
+    def __enter__(self) -> BaseComponent:
+        _CONTEXT_STACK.append(self)
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        if _CONTEXT_STACK and _CONTEXT_STACK[-1] is self:
+            _CONTEXT_STACK.pop()
 
     # ── Serialisation helpers ─────────────────────────────────────────────────
 

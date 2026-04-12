@@ -196,6 +196,22 @@ def cmd_lint(app_file: str) -> None:
     )
 
 
+# ── storybook ───────────────────────────────────────────────────────────────
+
+
+@main.command("storybook")
+@click.option("--port", "-p", default=9000, show_default=True, help="Storybook port.")
+@click.option(
+    "--no-browser", is_flag=True, default=False, help="Do not open browser automatically."
+)
+def cmd_storybook(port: int, no_browser: bool) -> None:
+    """Open the component storybook (gallery)."""
+    from pyui.cli.storybook import run_storybook
+
+    console.print("[bold cyan]Opening PyUI Storybook...[/bold cyan]")
+    run_storybook(port=port, open_browser=not no_browser)
+
+
 # ── info ──────────────────────────────────────────────────────────────────────
 
 
