@@ -79,9 +79,9 @@ class StorybookPage(Page):
     layout = "full-width"
 
     def compose(self) -> None:
-        # Root: sidebar fixed-width + main flex-1, no outer padding
+        # Root: sidebar fixed-width + main flex-1, small padding from edges
         with Flex(direction="row", align="start", gap=0).className(
-            "min-h-screen bg-[#f7f7f8]"
+            "min-h-screen bg-[#f7f7f8] pl-3"
         ):
             self._sidebar()
             self._main()
@@ -91,12 +91,13 @@ class StorybookPage(Page):
     # =========================================================
     def _sidebar(self) -> None:
         with Flex(direction="col", align="start", gap=0).className(
-            "w-[220px] flex-shrink-0 bg-white border-r border-gray-100 "
-            "h-screen sticky top-0 overflow-y-auto self-start"
+            "w-[220px] flex-shrink-0 bg-white border border-gray-100 rounded-xl "
+            "h-[calc(100vh-24px)] sticky top-3 overflow-y-auto self-start "
+            "shadow-[0_1px_4px_rgba(0,0,0,0.04)] mt-3 mb-3"
         ):
             # Logo
             with Flex(align="center", gap=2).className(
-                "px-4 py-4 border-b border-gray-100 flex-shrink-0"
+                "px-4 py-5 flex-shrink-0"
             ):
                 with Flex(align="center", justify="center").className(
                     "w-7 h-7 bg-gray-950 rounded-lg flex-shrink-0"
@@ -137,27 +138,22 @@ class StorybookPage(Page):
     # =========================================================
     def _main(self) -> None:
         with Flex(direction="col", gap=0).className("flex-1 min-w-0 min-h-screen"):
-            # Sticky top bar
-            with Flex(align="center", justify="between").className(
-                "sticky top-0 z-10 bg-white/95 backdrop-blur-sm "
-                "border-b border-gray-100 px-8 py-3 flex-shrink-0"
-            ):
-                with Flex(align="center", gap=3):
-                    Heading("Component Gallery", level=3)
-                    Badge("42+ Components", variant="secondary")
-                with Flex(align="center", gap=2):
-                    Badge("Alpine.js", variant="dark")
-                    Badge("Tailwind", variant="dark")
-                    Badge("Chart.js", variant="dark")
-
-            # Content area — full width, sections handle their own max-width
-            with Flex(direction="col", gap=0).className("px-8 py-8 pb-24 w-full"):
+            # Content area
+            with Flex(direction="col", gap=0).className("px-8 py-10 pb-24 w-full"):
+                # Page title — inline, no box
+                with Flex(align="center", justify="between").className("mb-8"):
+                    with Flex(align="center", gap=3):
+                        Heading("Component Gallery", level=2)
+                        Badge("42+ Components", variant="secondary")
+                    with Flex(align="center", gap=2):
+                        Badge("Alpine.js", variant="dark")
+                        Badge("Tailwind", variant="dark")
+                        Badge("Chart.js", variant="dark")
                 # Hero intro
-                with Flex(direction="col", gap=2).className("mb-10"):
-                    Text(
-                        "Every PyUI component, live and interactive. "
-                        "Built entirely with pure Python — no HTML, no templates."
-                    ).style("lead").paragraph()
+                Text(
+                    "Every PyUI component, live and interactive. "
+                    "Built entirely with pure Python — no HTML, no templates."
+                ).style("muted").paragraph()
 
                 self._section_typography()
                 self._section_badges()
@@ -183,25 +179,24 @@ class StorybookPage(Page):
     def _section_header(self, title: str, desc: str, anchor: str) -> None:
         """Section title with scroll-spy anchor."""
         with Flex(direction="col", gap=1).className(
-            "mt-12 mb-5 first:mt-0 sb-section-anchor"
+            "mt-14 mb-5 first:mt-0 sb-section-anchor"
         ).id(anchor):
             Heading(title, level=2)
             Text(desc).style("muted").paragraph()
-            Divider()
 
     def _card_wrap(self, label: str, hint: str = "") -> Flex:
-        """Preview card outer shell."""
+        """Preview card outer shell — label floats inline, no box header."""
         card = Flex(direction="col", gap=0).className(
             "bg-white border border-gray-100 rounded-2xl overflow-hidden "
-            "shadow-[0_1px_4px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] "
-            "transition-all duration-300"
+            "shadow-[0_1px_4px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_24px_rgba(0,0,0,0.07)] "
+            "transition-all duration-300 mb-5"
         )
         with card:
             with Flex(align="center", justify="between").className(
-                "px-5 py-3 border-b border-gray-100 bg-gray-50/50"
+                "px-5 pt-4 pb-0"
             ):
                 Text(label).className(
-                    "text-[11px] font-semibold text-gray-600 tracking-wide uppercase"
+                    "text-[10px] font-semibold text-gray-400 tracking-[0.12em] uppercase"
                 )
                 if hint:
                     Badge(hint, variant="secondary")
@@ -209,11 +204,11 @@ class StorybookPage(Page):
 
     def _pad(self) -> Flex:
         """Standard padded content area inside a card."""
-        return Flex(direction="col", gap=4).className("px-5 py-5")
+        return Flex(direction="col", gap=5).className("px-5 pt-3 pb-6")
 
     def _row(self) -> Flex:
         """Horizontal flex row inside a card."""
-        return Flex(align="center", gap=3, wrap=True).className("px-5 py-5")
+        return Flex(align="center", gap=3, wrap=True).className("px-5 pt-3 pb-6")
 
     # =========================================================
     # TYPOGRAPHY
@@ -221,7 +216,7 @@ class StorybookPage(Page):
     def _section_typography(self) -> None:
         self._section_header("Typography",
             "Headings h1–h6, text variants, and style modifiers.", "typography")
-        with Grid(cols=2, gap=4):
+        with Grid(cols=2, gap=5):
             with self._card_wrap("Headings", "h1 – h4"):
                 with self._pad():
                     Heading("Display Heading", level=1)
@@ -249,7 +244,7 @@ class StorybookPage(Page):
     def _section_badges(self) -> None:
         self._section_header("Badges + Tags",
             "Status indicators, labels, and categorization chips.", "badges")
-        with Grid(cols=2, gap=4):
+        with Grid(cols=2, gap=5):
             with self._card_wrap("Badge", "7 variants"):
                 with self._row():
                     Badge("Primary",   variant="primary")
@@ -273,7 +268,7 @@ class StorybookPage(Page):
     def _section_avatars(self) -> None:
         self._section_header("Avatars + Icons",
             "User representations and the Lucide icon library.", "avatars")
-        with Grid(cols=2, gap=4):
+        with Grid(cols=2, gap=5):
             with self._card_wrap("Avatar", "6 sizes"):
                 with self._row():
                     Avatar(name="Alice Smith", size="xs")
@@ -326,7 +321,7 @@ class StorybookPage(Page):
     def _section_inputs(self) -> None:
         self._section_header("Text Inputs",
             "Input, Textarea, Select, DatePicker, FilePicker.", "inputs")
-        with Grid(cols=2, gap=4):
+        with Grid(cols=2, gap=5):
             with self._card_wrap("Input", "4 types"):
                 with self._pad():
                     Input(placeholder="Default input",       label="Username")
@@ -349,7 +344,7 @@ class StorybookPage(Page):
     def _section_controls(self) -> None:
         self._section_header("Controls",
             "Checkbox, Toggle, and Slider — binary and range inputs.", "controls")
-        with Grid(cols=2, gap=4):
+        with Grid(cols=2, gap=5):
             with self._card_wrap("Checkbox + Toggle"):
                 with self._pad():
                     Checkbox(label="Accept terms and conditions")
@@ -372,7 +367,7 @@ class StorybookPage(Page):
     def _section_radio(self) -> None:
         self._section_header("Radio",
             "Single-selection radio button groups.", "radio")
-        with Grid(cols=2, gap=4):
+        with Grid(cols=2, gap=5):
             with self._card_wrap("Radio Group", "3 options"):
                 with self._pad():
                     Radio(
@@ -403,7 +398,7 @@ class StorybookPage(Page):
     def _section_forms(self) -> None:
         self._section_header("Forms",
             "Structured form containers with labels and validation.", "forms")
-        with Grid(cols=2, gap=4):
+        with Grid(cols=2, gap=5):
             with Form(title="Create Account"):
                 Input(placeholder="John Doe",          label="Full Name")
                 Input(type="email", placeholder="you@example.com", label="Email")
@@ -449,19 +444,66 @@ class StorybookPage(Page):
     def _section_overlays(self) -> None:
         self._section_header("Overlays",
             "Modal, Drawer, and Tooltip — focused interaction layers.", "overlays")
-        with Grid(cols=2, gap=4):
+        with Grid(cols=2, gap=5):
             with self._card_wrap("Modal", "Alpine.js"):
                 with self._pad():
                     Text("Modals use Alpine.js for open/close state.").style("muted").paragraph()
-                    with Modal(title="Confirm Action", open=False):
-                        Text("Are you sure? This action cannot be undone.").paragraph()
-                    Button("Open Modal").style("primary")
+                    from pyui.components.display.rawhtml import RawHTML
+                    RawHTML(
+                        '<div x-data="{ open: false }">'
+                        '<button @click="open = true" class="inline-flex items-center justify-center gap-2 font-medium tracking-tight '
+                        'transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 '
+                        'select-none cursor-pointer active:scale-[0.97] h-9 px-4 text-sm rounded-lg '
+                        'bg-gray-950 text-white shadow-sm hover:bg-gray-800 hover:shadow-md hover:-translate-y-px focus-visible:ring-gray-950">'
+                        'Open Modal</button>'
+                        '<template x-if="open">'
+                        '<div class="fixed inset-0 z-50 flex items-center justify-center p-4">'
+                        '<div class="fixed inset-0 bg-gray-950/60 backdrop-blur-sm z-40 transition-opacity duration-200" @click="open = false" x-transition.opacity></div>'
+                        '<div class="relative w-full max-w-lg bg-white rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden z-10" @click.stop x-transition>'
+                        '<div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">'
+                        '<h3 class="text-base font-semibold text-gray-900 tracking-tight">Confirm Action</h3>'
+                        '<button @click="open = false" class="text-gray-400 hover:text-gray-600 transition-colors rounded-lg p-1 hover:bg-gray-100">'
+                        '<i data-lucide="x" style="width:16px;height:16px" x-init="lucide.createIcons()"></i></button>'
+                        '</div>'
+                        '<div class="px-6 py-5"><p class="text-gray-700 leading-relaxed">Are you sure? This action cannot be undone.</p></div>'
+                        '<div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3 border-t border-gray-100">'
+                        '<button @click="open = false" class="inline-flex items-center justify-center gap-2 font-medium tracking-tight transition-all duration-200 ease-out h-9 px-4 text-sm rounded-lg bg-gray-950 text-white shadow-sm hover:bg-gray-800">Confirm</button>'
+                        '<button @click="open = false" class="inline-flex items-center justify-center gap-2 font-medium tracking-tight transition-all duration-200 ease-out h-9 px-4 text-sm rounded-lg border border-gray-200 bg-white text-gray-700 shadow-sm hover:bg-gray-50">Cancel</button>'
+                        '</div>'
+                        '</div>'
+                        '</div>'
+                        '</template>'
+                        '</div>'
+                    )
             with self._card_wrap("Drawer", "side=right"):
                 with self._pad():
                     Text("Drawers slide in from the side.").style("muted").paragraph()
-                    with Drawer(title="Settings", open=False, side="right"):
-                        Text("Drawer content goes here.").paragraph()
-                    Button("Open Drawer").style("ghost")
+                    from pyui.components.display.rawhtml import RawHTML
+                    RawHTML(
+                        '<div x-data="{ open: false }">'
+                        '<button @click="open = true" class="inline-flex items-center justify-center gap-2 font-medium tracking-tight '
+                        'transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 '
+                        'select-none cursor-pointer active:scale-[0.97] h-9 px-4 text-sm rounded-lg '
+                        'border border-gray-200 bg-white text-gray-700 shadow-sm hover:bg-gray-50 hover:border-gray-300 hover:-translate-y-px focus-visible:ring-gray-300">'
+                        'Open Drawer</button>'
+                        '<template x-if="open">'
+                        '<div class="fixed inset-0 z-50">'
+                        '<div class="fixed inset-0 bg-gray-950/50 backdrop-blur-sm z-40 transition-opacity duration-300" @click="open = false" x-transition.opacity></div>'
+                        '<div class="fixed inset-y-0 right-0 w-full max-w-md bg-white z-50 shadow-[0_0_60px_rgba(0,0,0,0.15)] flex flex-col transition-transform duration-300 ease-out" '
+                        'x-transition:enter="transform transition ease-out duration-300" '
+                        'x-transition:enter-start="translate-x-full" '
+                        'x-transition:enter-end="translate-x-0">'
+                        '<div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">'
+                        '<h2 class="text-base font-semibold text-gray-900 tracking-tight">Settings</h2>'
+                        '<button @click="open = false" class="text-gray-400 hover:text-gray-600 transition-colors rounded-lg p-1 hover:bg-gray-100">'
+                        '<i data-lucide="x" style="width:16px;height:16px" x-init="lucide.createIcons()"></i></button>'
+                        '</div>'
+                        '<div class="flex-1 px-6 py-6 overflow-y-auto"><p class="text-gray-700 leading-relaxed">Drawer content goes here.</p></div>'
+                        '</div>'
+                        '</div>'
+                        '</template>'
+                        '</div>'
+                    )
         with self._card_wrap("Tooltip", "group-hover"):
             with Flex(align="center", gap=6).className("px-5 py-5"):
                 with Tooltip("This is a helpful tooltip"):
@@ -477,10 +519,10 @@ class StorybookPage(Page):
     def _section_loading(self) -> None:
         self._section_header("Loading States",
             "Spinner, Progress, and Skeleton for async content.", "loading")
-        with Grid(cols=3, gap=4):
+        with Grid(cols=3, gap=5):
             # Spinner — explicit sizes shown side by side
             with self._card_wrap("Spinner", "5 sizes"):
-                with Flex(align="center", justify="center", gap=5).className("px-5 py-8"):
+                with Flex(align="center", justify="center", gap=5).className("px-5 py-10"):
                     Spinner(size="xs")
                     Spinner(size="sm")
                     Spinner(size="md")
@@ -490,17 +532,17 @@ class StorybookPage(Page):
             # Progress bars
             with self._card_wrap("Progress", "0 – 100%"):
                 with self._pad():
-                    with Flex(direction="col", gap=1):
+                    with Flex(direction="col", gap=3):
                         with Flex(align="center", justify="between"):
                             Text("Uploading").style("small")
                             Text("25%").style("small")
                         Progress(value=25)
-                    with Flex(direction="col", gap=1):
+                    with Flex(direction="col", gap=3):
                         with Flex(align="center", justify="between"):
                             Text("Processing").style("small")
                             Text("60%").style("small")
                         Progress(value=60)
-                    with Flex(direction="col", gap=1):
+                    with Flex(direction="col", gap=3):
                         with Flex(align="center", justify="between"):
                             Text("Complete").style("small")
                             Text("100%").style("small")
@@ -526,7 +568,7 @@ class StorybookPage(Page):
     def _section_nav(self) -> None:
         self._section_header("Nav + Tabs + Breadcrumb",
             "Navigation primitives for routing and content switching.", "nav")
-        with Flex(direction="col", gap=4):
+        with Flex(direction="col", gap=5):
             with self._card_wrap("Nav", "horizontal links"):
                 with Flex(align="center", justify="between").className("px-5 py-4"):
                     Nav(items=[
@@ -575,7 +617,7 @@ class StorybookPage(Page):
     def _section_menu(self) -> None:
         self._section_header("Menu",
             "Contextual dropdown menus for actions and navigation.", "menu")
-        with Grid(cols=3, gap=4):
+        with Grid(cols=3, gap=5):
             with self._card_wrap("Actions"):
                 with Flex(align="center", justify="center").className("px-5 py-5"):
                     Menu(items=[
@@ -601,12 +643,12 @@ class StorybookPage(Page):
     def _section_stats(self) -> None:
         self._section_header("Stats",
             "Key metric cards with trend indicators.", "stats")
-        with Grid(cols=4, gap=4):
+        with Grid(cols=4, gap=5):
             Stat("Total Users",    "24,521", trend="+18.2%", trend_up=True)
             Stat("Monthly Revenue","$84.2k", trend="+6.1%",  trend_up=True)
             Stat("Churn Rate",     "2.4%",   trend="-0.8%",  trend_up=False)
             Stat("Uptime",         "99.98%", trend="+0.01%", trend_up=True)
-        with Grid(cols=3, gap=4).className("mt-4"):
+        with Grid(cols=3, gap=5).className("mt-4"):
             Stat("Active Sessions","1,204",  trend="+42",    trend_up=True)
             Stat("Avg. Response",  "142ms",  trend="-18ms",  trend_up=True)
             Stat("Error Rate",     "0.03%",  trend="-0.01%", trend_up=True)
@@ -617,7 +659,7 @@ class StorybookPage(Page):
     def _section_tables(self) -> None:
         self._section_header("Tables",
             "Structured data grids with striped rows and hover states.", "tables")
-        with Flex(direction="col", gap=4):
+        with Flex(direction="col", gap=5):
             with self._card_wrap("Default Table", "5 rows"):
                 with Flex(direction="col", gap=0).className("overflow-x-auto"):
                     Table(
@@ -649,7 +691,7 @@ class StorybookPage(Page):
     def _section_charts(self) -> None:
         self._section_header("Charts",
             "Line, Bar, and Pie charts powered by Chart.js.", "charts")
-        with Grid(cols=2, gap=4):
+        with Grid(cols=2, gap=5):
             with self._card_wrap("Line Chart", "type=line"):
                 with Flex(direction="col", gap=0).className("p-4"):
                     Chart(
@@ -676,7 +718,7 @@ class StorybookPage(Page):
                             "borderRadius": 6,
                         }],
                     )
-        with Grid(cols=3, gap=4).className("mt-4"):
+        with Grid(cols=3, gap=5).className("mt-4"):
             with self._card_wrap("Pie Chart", "type=pie"):
                 with Flex(direction="col", gap=0).className("p-4"):
                     Chart(

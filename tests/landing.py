@@ -499,3 +499,9 @@ class LandingApp(App):
     description = "Write Python. Render Anywhere."
     theme = "light"
     home = LandingPage()
+
+if __name__ == "__main__":
+    import sys
+    sys.path.insert(0, "src")
+    from pyui.server.dev_server import run_dev_server
+    run_dev_server(LandingApp, port=8001, open_browser=True)

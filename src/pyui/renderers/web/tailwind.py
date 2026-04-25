@@ -523,7 +523,7 @@ def toast_classes(variant: str | None) -> str:
 def modal_overlay_classes() -> str:
     return (
         "fixed inset-0 bg-gray-950/60 backdrop-blur-sm z-40 "
-        "flex items-center justify-center p-4 transition-opacity duration-200"
+        "transition-opacity duration-200"
     )
 
 
@@ -547,7 +547,7 @@ def drawer_panel_classes(side: str = "right") -> str:
     return (
         f"fixed {side_cls} w-full max-w-md bg-white z-50 "
         "shadow-[0_0_60px_rgba(0,0,0,0.15)] "
-        "flex flex-col transition-transform duration-300 ease-out"
+        "flex flex-col"
     )
 
 
@@ -599,14 +599,7 @@ def spinner_classes(size: str) -> str:
 # Shimmer animation instead of plain pulse. More premium feel.
 
 def skeleton_classes(variant: str) -> str:
-    base = (
-        "relative overflow-hidden bg-gray-100 "
-        "before:absolute before:inset-0 "
-        "before:bg-gradient-to-r before:from-transparent "
-        "before:via-white/60 before:to-transparent "
-        "before:animate-[shimmer_1.5s_infinite] "
-        "before:translate-x-[-100%]"
-    )
+    base = "skeleton-shimmer"
     if variant == "circle":
         return f"{base} rounded-full"
     if variant == "rect":

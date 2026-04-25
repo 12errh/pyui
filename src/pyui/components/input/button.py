@@ -40,14 +40,14 @@ class Button(BaseComponent):
 
     component_type = "button"
 
-    def __init__(self, label: str = "") -> None:
+    def __init__(self, label: str = "", type: str = "button") -> None:
         super().__init__()
         self.props: dict[str, Any] = {
             "label": label,
-            "type": "button",  # HTML type attr: "button" | "submit" | "reset"
+            "type": type,
             "loading": False,
-            "icon": None,  # Optional icon name (left of label)
-            "icon_right": None,  # Optional icon name (right of label)
+            "icon": None,
+            "icon_right": None,
         }
 
     def submit(self) -> Button:

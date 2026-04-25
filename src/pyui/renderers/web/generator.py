@@ -247,6 +247,27 @@ _PAGE_TEMPLATE = """\
       0% {{ transform: translateX(-100%); }}
       100% {{ transform: translateX(100%); }}
     }}
+    .skeleton-shimmer {{
+      position: relative;
+      overflow: hidden;
+      background-color: #f3f4f6;
+    }}
+    .skeleton-shimmer::before {{
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+      animation: shimmer 1.5s infinite;
+    }}
+
+    /* Spin animation — explicit so Tailwind CDN JIT doesn't need to scan */
+    @keyframes spin {{
+      from {{ transform: rotate(0deg); }}
+      to {{ transform: rotate(360deg); }}
+    }}
+    .animate-spin {{
+      animation: spin 1s linear infinite !important;
+    }}
 
     /* Selection */
     ::selection {{ background: #ede9fe; color: #4c1d95; }}
@@ -552,7 +573,7 @@ def _render_text(node: IRNode) -> str:
 
     # Check if this is a raw HTML injection
     if node.props.get("is_raw_html", False):
-        raw_html = node.props.get("inject_html", "")
+        raw_html: str = node.props.get("inject_html", "")
         return raw_html
 
     # content is already resolved (callable was called during build_ir_node)
@@ -589,9 +610,10 @@ def _render_grid(node: IRNode) -> str:
     cols = node.props.get("cols", 1)
     gap = node.props.get("gap", 4)
     classes = tw.grid_classes(cols=cols, gap=gap)
-
+    # Use inline gap so CDN JIT doesn't need to scan dynamic class names
+    gap_px = gap * 4  # Tailwind gap-N = N*4px
     inner = "\n".join(f"  {_render_node(child)}" for child in node.children)
-    return f'<div id="{node.node_id}" class="{classes}">\n{inner}\n</div>'
+    return f'<div id="{node.node_id}" class="{classes}" style="gap:{gap_px}px">\n{inner}\n</div>'
 
 
 def _render_flex(node: IRNode) -> str:
@@ -601,9 +623,10 @@ def _render_flex(node: IRNode) -> str:
     gap = node.props.get("gap", 4)
     wrap = node.props.get("wrap", False)
     classes = tw.flex_classes(direction, align, justify, gap, wrap)
-
+    # Use inline gap so CDN JIT doesn't need to scan dynamic class names
+    gap_px = gap * 4
     inner = "\n".join(f"  {_render_node(child)}" for child in node.children)
-    return f'<div id="{node.node_id}" class="{classes}">\n{inner}\n</div>'
+    return f'<div id="{node.node_id}" class="{classes}" style="gap:{gap_px}px">\n{inner}\n</div>'
 
 
 def _render_stack(node: IRNode) -> str:
@@ -911,13 +934,21 @@ def _render_radio_group(node: IRNode) -> str:
 def _render_toggle(node: IRNode) -> str:
     checked = node.props.get("checked", False)
     label_text = node.props.get("label")
-    classes = tw.toggle_classes(checked)
-    knob_classes = tw.toggle_knob_classes(checked)
 
-    # Simplified toggle using a button + hidden input/Alpine state in future
+    on_cls = tw.toggle_classes(True)
+    off_cls = tw.toggle_classes(False)
+    on_knob = tw.toggle_knob_classes(True)
+    off_knob = tw.toggle_knob_classes(False)
+    # Static aria-checked for SSR + Alpine binding for interactivity
+    static_aria = "true" if checked else "false"
+
     inner = (
-        f'<button type="button" class="{classes}" role="switch" aria-checked="{str(checked).lower()}">\n'
-        f'  <span class="{knob_classes}"></span>\n'
+        f'<button type="button" id="{node.node_id}" '
+        f'x-data="{{ on: {str(checked).lower()} }}" '
+        f'@click="on = !on" '
+        f':class="on ? \'{on_cls}\' : \'{off_cls}\'" '
+        f'role="switch" aria-checked="{static_aria}" :aria-checked="on">\n'
+        f'  <span :class="on ? \'{on_knob}\' : \'{off_knob}\'"></span>\n'
         f"</button>"
     )
     if label_text:
@@ -1063,26 +1094,37 @@ def _render_modal(node: IRNode) -> str:
     footer_html = ""
     if footer_children:
         footer_inner = "\n".join(f"          {_render_node(c)}" for c in footer_children)
-        footer_html = f'      <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-3">\n{footer_inner}\n      </div>'
+        footer_html = (
+            f'      <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3 border-t border-gray-100">\n'
+            f"{footer_inner}\n"
+            f"      </div>"
+        )
 
     header_html = ""
     if title:
         header_html = (
-            f'      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 border-b border-gray-100">\n'
-            f'        <h3 class="text-lg font-semibold leading-6 text-gray-900">{html_module.escape(title)}</h3>\n'
+            f'      <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">\n'
+            f'        <h3 class="text-base font-semibold text-gray-900 tracking-tight">{html_module.escape(title)}</h3>\n'
+            f'        <button @click="open = false" class="text-gray-400 hover:text-gray-600 transition-colors rounded-lg p-1 hover:bg-gray-100">'
+            f'<i data-lucide="x" style="width:16px;height:16px"></i></button>\n'
             f"      </div>"
         )
 
+    # The modal renders as a self-contained Alpine component.
+    # A sibling trigger button can open it by dispatching a custom event.
     return (
-        f'<div id="{node.node_id}" x-data="{{ open: {str(is_open).lower()} }}" x-show="open" class="relative z-40">\n'
-        f'  <div class="{overlay_cls}" x-show="open" x-transition.opacity @click="open = false"></div>\n'
-        f'  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">\n'
-        f'    <div class="{panel_cls}" x-show="open" x-transition @click.away="open = false">\n'
+        f'<div id="{node.node_id}" x-data="{{ open: {str(is_open).lower()} }}" '
+        f'@open-modal-{node.node_id}.window="open = true">\n'
+        f'  <template x-if="open">\n'
+        f'    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">\n'
+        f'      <div class="{overlay_cls}" @click="open = false" x-transition.opacity></div>\n'
+        f'      <div class="{panel_cls} relative z-10" @click.stop x-transition>\n'
         f"{header_html}\n"
-        f'      <div class="bg-white px-4 pt-5 pb-4 sm:p-6">\n{inner}\n      </div>\n'
+        f'        <div class="px-6 py-5">\n{inner}\n        </div>\n'
         f"{footer_html}\n"
+        f"      </div>\n"
         f"    </div>\n"
-        f"  </div>\n"
+        f"  </template>\n"
         f"</div>"
     )
 
@@ -1096,29 +1138,37 @@ def _render_drawer(node: IRNode) -> str:
     panel_cls = tw.drawer_panel_classes(side)
 
     # Alpine transition logic
-    translate_cls = "translate-x-full" if side == "right" else "-translate-x-full"
+    enter_start = "translate-x-full" if side == "right" else "-translate-x-full"
 
     inner = "\n".join(f"      {_render_node(child)}" for child in node.children)
-    header = (
-        f'<h2 class="text-lg font-medium text-gray-900">{html_module.escape(title)}</h2>'
+    header_title = (
+        f'<h2 class="text-base font-semibold text-gray-900 tracking-tight">{html_module.escape(title)}</h2>'
         if title
-        else ""
+        else "<span></span>"
     )
 
     return (
-        f'<div id="{node.node_id}" x-data="{{ open: {str(is_open).lower()} }}" x-show="open" class="relative z-40">\n'
-        f'  <div class="{overlay_cls}" @click="open = false" x-show="open" x-transition.opacity></div>\n'
-        f'  <div class="{panel_cls}">\n'
-        f'    <div class="w-screen max-w-md bg-white shadow-xl flex flex-col h-full" '
-        f'         x-show="open" x-transition:enter="transform transition ease-in-out duration-300" '
-        f'         x-transition:enter-start="{translate_cls}" x-transition:enter-end="translate-x-0">\n'
-        f'      <div class="px-4 py-6 sm:px-6 border-b flex items-center justify-between">\n'
-        f"        {header}\n"
-        f'        <button @click="open = false" class="text-gray-400 hover:text-gray-500"><i data-lucide="x"></i></button>\n'
+        f'<div id="{node.node_id}" x-data="{{ open: {str(is_open).lower()} }}" '
+        f'@open-drawer-{node.node_id}.window="open = true">\n'
+        f'  <template x-if="open">\n'
+        f'    <div class="fixed inset-0 z-50">\n'
+        f'      <div class="{overlay_cls}" @click="open = false" x-transition.opacity></div>\n'
+        f'      <div class="{panel_cls}" '
+        f'           x-transition:enter="transform transition ease-out duration-300" '
+        f'           x-transition:enter-start="{enter_start}" '
+        f'           x-transition:enter-end="translate-x-0" '
+        f'           x-transition:leave="transform transition ease-in duration-200" '
+        f'           x-transition:leave-start="translate-x-0" '
+        f'           x-transition:leave-end="{enter_start}">\n'
+        f'        <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">\n'
+        f"          {header_title}\n"
+        f'          <button @click="open = false" class="text-gray-400 hover:text-gray-600 transition-colors rounded-lg p-1 hover:bg-gray-100">'
+        f'<i data-lucide="x" style="width:16px;height:16px"></i></button>\n'
+        f"        </div>\n"
+        f'        <div class="flex-1 px-6 py-6 overflow-y-auto">\n{inner}\n        </div>\n'
         f"      </div>\n"
-        f'      <div class="relative flex-1 px-4 py-6 sm:px-6 overflow-y-auto">\n{inner}\n      </div>\n'
         f"    </div>\n"
-        f"  </div>\n"
+        f"  </template>\n"
         f"</div>"
     )
 
@@ -1160,9 +1210,10 @@ def _render_progress(node: IRNode) -> str:
 
     base_cls = tw.progress_base_classes()
     bar_cls = tw.progress_bar_classes()
+    pct_int = int(round(pct))
     return (
         f'<div id="{node.node_id}" class="{base_cls}">\n'
-        f'  <div class="{bar_cls}" style="width: {pct}%"></div>\n'
+        f'  <div class="{bar_cls}" style="width: {pct_int}%"></div>\n'
         f"</div>"
     )
 
@@ -1175,7 +1226,7 @@ def _render_spinner(node: IRNode) -> str:
 
     return (
         f'<svg id="{node.node_id}" class="animate-spin" '
-        f'style="width:{px}px;height:{px}px;color:#111827;flex-shrink:0" '
+        f'style="width:{px}px;height:{px}px;color:#111827;flex-shrink:0;display:inline-block" '
         f'xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">\n'
         f'  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>\n'
         f'  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>\n'
@@ -1414,7 +1465,7 @@ def _render_list(node: IRNode) -> str:
 
 def _render_raw_html(node: IRNode) -> str:
     """Render raw HTML content without escaping."""
-    return node.props.get("html", "")
+    return str(node.props.get("html", ""))
 
 
 def _render_page_node(node: IRNode) -> str:

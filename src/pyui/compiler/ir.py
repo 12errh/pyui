@@ -156,6 +156,14 @@ def build_ir_node(component: BaseComponent, path: str | None = None) -> IRNode:
     props_copy = dict(component.props)
     props_copy["class_name"] = " ".join(component._classes)
 
+    # Promote base component attributes into props so renderers can access them
+    if component._disabled is not False:
+        props_copy["disabled"] = component._disabled
+    if component._size is not None:
+        props_copy["_size"] = component._size
+    if component._hidden is not False:
+        props_copy["hidden"] = component._hidden
+
     # If content prop is a callable (reactive lambda) or a ReactiveVar directly,
     # resolve it now and mark that this node is reactive.
     from pyui.state.reactive import _REACTIVE_CONTEXT, ReactiveVar, get_reactive_name

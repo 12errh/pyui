@@ -11,10 +11,12 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeVar
 
 if TYPE_CHECKING:
     from pyui.state.reactive import ReactiveVar
+
+_T = TypeVar("_T", bound="BaseComponent")
 
 # Sentinel for "not set"
 _UNSET: Any = object()
@@ -33,10 +35,7 @@ class BaseComponent:
     component_type: str = "base"
 
     def __init__(self) -> None:
-        # Unique DOM / widget id — overridable via .id()
         self._id: str = f"pyui-{uuid.uuid4().hex[:8]}"
-
-        # Style / layout props
         self._style_variant: str | None = None
         self._size: str | None = None
         self._margin: tuple[Any, ...] = ()
@@ -44,136 +43,125 @@ class BaseComponent:
         self._width: str | int | None = None
         self._height: str | int | None = None
         self._classes: list[str] = []
-
-        # Visibility / interactivity
         self._hidden: bool | ReactiveVar[bool] = False
         self._disabled: bool | ReactiveVar[bool] = False
-
-        # Event handlers
         self._on_click: Callable[..., Any] | None = None
         self._on_change: Callable[..., Any] | None = None
         self._on_hover: Callable[..., Any] | None = None
         self._on_mount: Callable[..., Any] | None = None
         self._on_unmount: Callable[..., Any] | None = None
-
-        # Children
         self.children: list[BaseComponent] = []
 
-        # Auto-register with parent context if inside a 'with' block
         if _CONTEXT_STACK:
             parent = _CONTEXT_STACK[-1]
             if hasattr(parent, "add"):
                 parent.add(self)
 
-        # Extra arbitrary props (set by subclasses)
         self.props: dict[str, Any] = {}
 
     # ── Style & layout ────────────────────────────────────────────────────────
 
-    def style(self, variant: str) -> BaseComponent:
+    def style(self: _T, variant: str) -> _T:
         """Set the style variant (e.g. ``"primary"``, ``"ghost"``, ``"danger"``)."""
         self._style_variant = variant
         return self
 
-    def size(self, size: str) -> BaseComponent:
+    def size(self: _T, size: str) -> _T:
         """Set the size (``"xs"``, ``"sm"``, ``"md"``, ``"lg"``, ``"xl"``)."""
         self._size = size
         return self
 
-    def margin(self, *args: str | int) -> BaseComponent:
+    def margin(self: _T, *args: str | int) -> _T:
         """CSS-style margin shorthand — up to 4 values."""
         self._margin = args
         return self
 
-    def padding(self, *args: str | int) -> BaseComponent:
+    def padding(self: _T, *args: str | int) -> _T:
         """CSS-style padding shorthand — up to 4 values."""
         self._padding = args
         return self
 
-    def width(self, value: str | int) -> BaseComponent:
+    def width(self: _T, value: str | int) -> _T:
         """Set width (e.g. ``"100%"``, ``400``, ``"auto"``)."""
         self._width = value
         return self
 
-    def height(self, value: str | int) -> BaseComponent:
+    def height(self: _T, value: str | int) -> _T:
         """Set height."""
         self._height = value
         return self
 
-    def className(self, *classes: str) -> BaseComponent:
+    def className(self: _T, *classes: str) -> _T:
         """Append raw CSS class names (escape hatch for advanced users)."""
         self._classes.extend(classes)
         return self
 
     # ── Visibility & state ────────────────────────────────────────────────────
 
-    def hidden(self, condition: bool | ReactiveVar[bool]) -> BaseComponent:
-        """
-        Hide the component when *condition* is truthy.
-        Accepts a plain ``bool`` or a :class:`~pyui.state.reactive.ReactiveVar`.
-        """
+    def hidden(self: _T, condition: bool | ReactiveVar[bool]) -> _T:
+        """Hide the component when *condition* is truthy."""
         self._hidden = condition
         return self
 
-    def disabled(self, condition: bool | ReactiveVar[bool]) -> BaseComponent:
+    def disabled(self: _T, condition: bool | ReactiveVar[bool]) -> _T:
         """Disable the component when *condition* is truthy."""
         self._disabled = condition
         return self
 
     # ── Identity ──────────────────────────────────────────────────────────────
 
-    def id(self, identifier: str) -> BaseComponent:
+    def id(self: _T, identifier: str) -> _T:
         """Override the auto-generated element ID."""
         self._id = identifier
         return self
 
     # ── Event handlers ────────────────────────────────────────────────────────
 
-    def onClick(self, handler: Callable[..., Any]) -> BaseComponent:  # noqa: N802
+    def onClick(self: _T, handler: Callable[..., Any]) -> _T:  # noqa: N802
         """Register a click handler."""
         self._on_click = handler
         return self
 
-    def onChange(self, handler: Callable[..., Any]) -> BaseComponent:  # noqa: N802
+    def onChange(self: _T, handler: Callable[..., Any]) -> _T:  # noqa: N802
         """Register a change handler (input, select, toggle, etc.)."""
         self._on_change = handler
         return self
 
-    def onHover(self, handler: Callable[..., Any]) -> BaseComponent:  # noqa: N802
+    def onHover(self: _T, handler: Callable[..., Any]) -> _T:  # noqa: N802
         """Register a hover handler."""
         self._on_hover = handler
         return self
 
-    def onMount(self, handler: Callable[..., Any]) -> BaseComponent:  # noqa: N802
+    def onMount(self: _T, handler: Callable[..., Any]) -> _T:  # noqa: N802
         """Register a mount lifecycle handler."""
         self._on_mount = handler
         return self
 
-    def onUnmount(self, handler: Callable[..., Any]) -> BaseComponent:  # noqa: N802
+    def onUnmount(self: _T, handler: Callable[..., Any]) -> _T:  # noqa: N802
         """Register an unmount lifecycle handler."""
         self._on_unmount = handler
         return self
 
     # ── Children ─────────────────────────────────────────────────────────────
 
-    def add(self, *children: BaseComponent) -> BaseComponent:
+    def add(self: _T, *children: BaseComponent) -> _T:
         """Append child components. Returns *self* for chaining."""
         self.children.extend(children)
         return self
 
-    def remove(self, child: BaseComponent) -> BaseComponent:
+    def remove(self: _T, child: BaseComponent) -> _T:
         """Remove a specific child."""
         self.children.remove(child)
         return self
 
-    def clear(self) -> BaseComponent:
+    def clear(self: _T) -> _T:
         """Remove all children."""
         self.children.clear()
         return self
 
-    # ── Context Manager (for declarative composition) ───────────────────────
+    # ── Context Manager ──────────────────────────────────────────────────────
 
-    def __enter__(self) -> BaseComponent:
+    def __enter__(self: _T) -> _T:
         _CONTEXT_STACK.append(self)
         return self
 
@@ -198,19 +186,12 @@ class BaseComponent:
             events["unmount"] = id_of(self._on_unmount)
         return events
 
-    # ── Render (overridden by compiler — not called directly by users) ────────
-
     def render(self, target: str = "web") -> Any:  # noqa: ARG002
-        """
-        Called by the compiler to produce an ``IRNode``.
-        Default implementation raises; renderers call the IR builder instead.
-        """
+        """Called by the compiler to produce an ``IRNode``."""
         raise NotImplementedError(
             f"Component '{self.component_type}' has no render() implementation. "
             "Use pyui.compiler.ir.build_ir_node() instead."
         )
-
-    # ── Dunder helpers ────────────────────────────────────────────────────────
 
     def __repr__(self) -> str:
         return (
