@@ -48,8 +48,20 @@ def compile_app(
         ir = build_ir_tree(app_class)
         gen = WebGenerator(ir)
         gen.write_to_disk(out)
+    elif target == "desktop":
+        # Desktop target: launch the native window (no static output)
+        from pyui.renderers.desktop import run_desktop_app
+
+        run_desktop_app(app_class)
+    elif target == "cli":
+        # CLI target: render in the terminal (no static output)
+        from pyui.renderers.cli import run_cli_app
+
+        run_cli_app(app_class)
     else:
-        raise NotImplementedError(f"Target '{target}' is not yet implemented. Use 'web' for now.")
+        raise NotImplementedError(
+            f"Target '{target}' is not yet implemented. Available targets: 'web', 'desktop', 'cli'."
+        )
 
     return out
 
