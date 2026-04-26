@@ -219,10 +219,12 @@ def test_graceful_component_error_does_not_crash_page() -> None:
 
 def test_example_dashboard_compiles(tmp_path: Path) -> None:
     """examples/dashboard/app.py must compile without errors."""
+    from pathlib import Path as _Path
     from pyui.compiler.discovery import discover_app
     from pyui.compiler import compile_app
 
-    app_class = discover_app("examples/dashboard/app.py")
+    example = _Path(__file__).parent.parent.parent / "examples" / "dashboard" / "app.py"
+    app_class = discover_app(str(example))
     out, stats = compile_app(app_class, target="web", output_dir=str(tmp_path))
     assert (out / "index.html").exists()
     assert stats["pages"] >= 3
@@ -230,10 +232,12 @@ def test_example_dashboard_compiles(tmp_path: Path) -> None:
 
 def test_example_blog_compiles(tmp_path: Path) -> None:
     """examples/blog/app.py must compile without errors."""
+    from pathlib import Path as _Path
     from pyui.compiler.discovery import discover_app
     from pyui.compiler import compile_app
 
-    app_class = discover_app("examples/blog/app.py")
+    example = _Path(__file__).parent.parent.parent / "examples" / "blog" / "app.py"
+    app_class = discover_app(str(example))
     out, stats = compile_app(app_class, target="web", output_dir=str(tmp_path))
     assert (out / "index.html").exists()
     assert stats["pages"] >= 2
