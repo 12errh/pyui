@@ -444,6 +444,65 @@ _PAGE_TEMPLATE = """\
       }};
     }})();
   </script>
+
+  <!-- PyUI Dev Tools Panel -->
+  <div id="__pyui_devtools" style="position:fixed;bottom:16px;right:16px;z-index:99998;font-family:'Segoe UI',system-ui,sans-serif;font-size:12px;">
+    <button id="__pyui_dt_toggle" onclick="var p=document.getElementById('__pyui_dt_panel');var open=p.style.display!=='none';p.style.display=open?'none':'flex';this.textContent=open?'⚙ PyUI':'✕ Close';if(!open)window.__pyuiDtRefresh();" style="background:#0f172a;color:#e2e8f0;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:0.05em;box-shadow:0 4px 12px rgba(0,0,0,0.3);">⚙ PyUI</button>
+    <div id="__pyui_dt_panel" style="display:none;flex-direction:column;position:absolute;bottom:36px;right:0;width:320px;max-height:480px;background:#0f172a;border:1px solid #1e293b;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+      <div style="display:flex;border-bottom:1px solid #1e293b;">
+        <button class="__pyui_dt_tab __pyui_dt_active" data-tab="state" onclick="window.__pyuiDtTab('state')" style="flex:1;padding:8px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:11px;font-weight:600;">State</button>
+        <button class="__pyui_dt_tab" data-tab="pages" onclick="window.__pyuiDtTab('pages')" style="flex:1;padding:8px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:11px;font-weight:600;">Pages</button>
+        <button class="__pyui_dt_tab" data-tab="events" onclick="window.__pyuiDtTab('events')" style="flex:1;padding:8px;background:none;border:none;color:#94a3b8;cursor:pointer;font-size:11px;font-weight:600;">Events</button>
+      </div>
+      <div id="__pyui_dt_content" style="flex:1;overflow-y:auto;padding:12px;max-height:400px;color:#e2e8f0;"><div style="color:#475569;font-size:11px;">Loading...</div></div>
+    </div>
+  </div>
+  <style>
+    .__pyui_dt_tab.__pyui_dt_active{{color:#38bdf8!important;border-bottom:2px solid #38bdf8;}}
+    #__pyui_dt_content::-webkit-scrollbar{{width:4px;}}
+    #__pyui_dt_content::-webkit-scrollbar-thumb{{background:#334155;border-radius:4px;}}
+  </style>
+  <script>
+    (function(){{
+      var currentTab='state';
+      var eventLog=[];
+      window.__pyuiDtTab=function(tab){{
+        currentTab=tab;
+        document.querySelectorAll('.__pyui_dt_tab').forEach(function(b){{b.classList.toggle('__pyui_dt_active',b.dataset.tab===tab);}});
+        window.__pyuiDtRender();
+      }};
+      window.__pyuiDtRender=function(){{
+        var el=document.getElementById('__pyui_dt_content');
+        if(!el)return;
+        if(currentTab==='state'){{
+          var state=window.__pyuiState||{{}};
+          var keys=Object.keys(state);
+          if(!keys.length){{el.innerHTML='<div style="color:#475569">No reactive state.</div>';return;}}
+          el.innerHTML=keys.map(function(k){{return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #1e293b"><span style="color:#94a3b8">'+k+'</span><span style="color:#38bdf8;font-weight:600">'+JSON.stringify(state[k])+'</span></div>';}}).join('');
+        }}else if(currentTab==='pages'){{
+          var pages={pages_json};
+          el.innerHTML=pages.map(function(p){{var a=location.pathname===p.route;return '<div style="padding:6px 0;border-bottom:1px solid #1e293b"><a href="'+p.route+'" style="color:'+(a?'#38bdf8':'#94a3b8')+';text-decoration:none">'+(a?'▶ ':' ')+p.title+'</a><span style="color:#475569;float:right">'+p.route+'</span></div>';}}).join('');
+        }}else{{
+          if(!eventLog.length){{el.innerHTML='<div style="color:#475569">No events yet.</div>';return;}}
+          el.innerHTML=eventLog.map(function(e){{return '<div style="padding:4px 0;border-bottom:1px solid #1e293b"><span style="color:#475569;font-size:10px">'+e.time+'</span> <span style="color:#94a3b8;font-size:10px;word-break:break-all">'+e.id+'</span></div>';}}).join('');
+        }}
+      }};
+      window.__pyuiDtRefresh=function(){{
+        if(window.Alpine){{try{{var s=Alpine.store('pyui');if(s&&s.state)window.__pyuiState=Object.assign({{}},s.state);}}catch(e){{}}}}
+        window.__pyuiDtRender();
+      }};
+      var _orig=window.__pyuiEvent;
+      window.__pyuiEvent=function(id,data){{
+        eventLog.unshift({{id:id,data:data,time:new Date().toLocaleTimeString()}});
+        if(eventLog.length>50)eventLog.pop();
+        if(currentTab==='events'&&document.getElementById('__pyui_dt_panel').style.display!=='none')window.__pyuiDtRender();
+        return _orig(id,data);
+      }};
+      document.addEventListener('alpine:initialized',function(){{
+        if(window.Alpine){{Alpine.effect(function(){{try{{var s=Alpine.store('pyui');if(s&&s.state){{window.__pyuiState=Object.assign({{}},s.state);if(currentTab==='state'&&document.getElementById('__pyui_dt_panel').style.display!=='none')window.__pyuiDtRender();}}}}catch(e){{}}}}); }}
+      }});
+    }})();
+  </script>
 </body>
 </html>
 """
@@ -1572,6 +1631,11 @@ class WebGenerator:
 
         from pyui.theme.engine import dark_mode_script
 
+        pages_json = json.dumps([
+            {"route": p.route, "title": p.title or p.route}
+            for p in self.ir_tree.pages
+        ])
+
         return _PAGE_TEMPLATE.format(
             title=html_module.escape(
                 ir_page.title or self.ir_tree.app_meta.get("name", "PyUI App")
@@ -1587,6 +1651,7 @@ class WebGenerator:
             state_json=state_json,
             node_state_json=node_state_json,
             persistent_vars_json=persistent_vars_json,
+            pages_json=pages_json,
         )
 
     def write_to_disk(self, output_dir: Path) -> None:
