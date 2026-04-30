@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "zolt"
-version = "1.2.0"
+version = "1.2.1"
 description = "Write Python, render anywhere — web, desktop, and CLI from one codebase."
 readme = "README.md"
 license = { text = "MIT" }

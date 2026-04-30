@@ -7,7 +7,17 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
-## [1.2.0] - 2026-04-30
+## [1.2.1] - 2026-04-30
+
+### Fixed
+- `zolt new --template agency` now scaffolds the exact same multi-file
+  structure as `examples/agency/` — `app.py`, `styles.py`, and a
+  `sections/` folder with all 8 section files. Previously it generated
+  a broken single-file app with `{{` syntax errors.
+
+---
+
+
 
 ### Added
 - **5 new components**: `BlurHeading`, `Link`, `Section`, `VideoBg`, `FloatingNav`
